@@ -2,5 +2,5 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="AutoClicker.vcxproj" />
+  <Project Path="AutoClicker.vcxproj" Id="eb634e32-204e-4742-94bb-cd9377aaf277" />
 </Solution>
