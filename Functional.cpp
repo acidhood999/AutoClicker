@@ -64,31 +64,56 @@ void Functional::initializationButtons(QVector<QPointer<QPushButton>>& buttons)
 
     buttons[0]->setText("Start");
     buttons[1]->setText("Stop");
-
-
+    buttons[1]->setEnabled(false);
 }
+
+void Functional::ClickLMB()
+{
+    INPUT input;
+
+    input.type = 0;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    input.mi.mouseData = 0;
+    input.mi.time = 0;
+
+    SendInput(1, &input, sizeof(INPUT));
+    input.mi.dwFlags = 4;
+
+
+    SendInput(1, &input, sizeof(INPUT));
+}
+
 void Functional::buttonsClickStart()
 {
-    runCur = true;
-        QtConcurrent::run([this]()
-        {
-                while (runCur)
-                {
-                    ClickLMB();
-                }
-        });
-    
-    
 
-    
+    buttons[0]->setEnabled(false);
+    buttons[1]->setEnabled(true);
+
+    unsigned long long ms_time = lines[3]->text().toLongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
+    if (ms_time == 0) ms_time = 10;
+    runCur = true;
+   
+    future = QtConcurrent::run([this,ms_time]()
+    {
+        while (runCur)
+        {
+            ClickLMB();
+            QThread::msleep(ms_time);
+        }    
+    });
+
 }
 void Functional::buttonsClickStop()
-{
+{  
     runCur = false;
-   
+    buttons[0]->setEnabled(true);
+    buttons[1]->setEnabled(false);
 }
+
 Functional::~Functional()
 {
+    runCur = false;
+    if (future.isRunning()) future.waitForFinished();
 }
 
 
