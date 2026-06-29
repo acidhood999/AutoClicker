@@ -18,13 +18,21 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
     clickIntervalLayout->addWidget(lines[3], 0, 6);
     clickIntervalLayout->addWidget(new QLabel("ms", this), 0, 7);
 
+    QGroupBox* mouseButtonsSelectGroup = new QGroupBox("Click Options", this);
+    QGridLayout* mouseButtonsSelectLayout = new QGridLayout(mouseButtonsSelectGroup);
+
+    initializationMouseButtons(mouseButtonsSelect);
+    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[0], 0, 0);
+    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[1], 1, 0);
+
+
 
     QGroupBox* buttonsGroup = new QGroupBox(this);
     QGridLayout* buttonsLayout = new QGridLayout(buttonsGroup);
 
     initializationButtons(buttons);
-    buttonsLayout->addWidget(buttons[0], 1, 0);
-    buttonsLayout->addWidget(buttons[1],1, 1);
+    buttonsLayout->addWidget(buttons[0], 0, 0);
+    buttonsLayout->addWidget(buttons[1], 0, 1);
 
 
 
@@ -35,7 +43,10 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
 
 
     toolsContainer->addWidget(clickIntervalGroup, 0, 0);
-    toolsContainer->addWidget(buttonsGroup, 1, 0);
+    toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0);
+    toolsContainer->addWidget(buttonsGroup, 2, 0);
+
+   
 
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
@@ -67,38 +78,61 @@ void Functional::initializationButtons(QVector<QPointer<QPushButton>>& buttons)
     buttons[1]->setEnabled(false);
 }
 
-void Functional::ClickLMB()
+void Functional::initializationMouseButtons(QVector<QPointer<QComboBox>>& mouseButtonsSelect)
 {
-    INPUT input;
+    mouseButtonsSelect.resize(2);
 
-    input.type = 0;
-    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    input.mi.mouseData = 0;
-    input.mi.time = 0;
+    mouseButtonsSelect[0] = new QComboBox(this);
+    mouseButtonsSelect[1] = new QComboBox(this);
+
+    mouseButtonsSelect[0]->addItem("Left", "Left");
+    mouseButtonsSelect[0]->addItem("Middle", "Middle");
+    mouseButtonsSelect[0]->addItem("Right", "Right");
+
+    mouseButtonsSelect[1]->addItem("Single", true);
+    mouseButtonsSelect[1]->addItem("Double", false);
+
+    mouseButtonsSelectName["Left"] = { MOUSEEVENTF_LEFTDOWN , MOUSEEVENTF_LEFTUP };
+    mouseButtonsSelectName["Middle"] = { MOUSEEVENTF_MIDDLEDOWN , MOUSEEVENTF_MIDDLEUP };
+    mouseButtonsSelectName["Right"] = { MOUSEEVENTF_RIGHTDOWN , MOUSEEVENTF_RIGHTUP };
+}
+
+void Functional::ClickLMB(const QString& key)
+{
+    INPUT input = {0};
+    const auto& event = mouseButtonsSelectName.at(key);
+    input.type = INPUT_MOUSE;
+    input.mi.dwFlags = event[0];
 
     SendInput(1, &input, sizeof(INPUT));
-    input.mi.dwFlags = 4;
 
+    QThread::msleep(5);
+    input.mi.dwFlags = event[1];
 
     SendInput(1, &input, sizeof(INPUT));
 }
 
 void Functional::buttonsClickStart()
 {
-
+    if (runCur) return;
     buttons[0]->setEnabled(false);
     buttons[1]->setEnabled(true);
 
+
     unsigned long long ms_time = lines[3]->text().toLongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
-    if (ms_time == 0) ms_time = 10;
+    if (ms_time < 10) ms_time = 10;
     runCur = true;
-   
-    future = QtConcurrent::run([this,ms_time]()
+
+    QString selectedKey = mouseButtonsSelect[0]->currentData().toString();
+    bool controlClick = mouseButtonsSelect[1]->currentData().toBool();
+
+    future = QtConcurrent::run([this,ms_time,selectedKey, controlClick]()
     {
         while (runCur)
         {
-            ClickLMB();
+            ClickLMB(selectedKey);
             QThread::msleep(ms_time);
+            if (!controlClick) ClickLMB(selectedKey);
         }    
     });
 

@@ -14,7 +14,9 @@
 #include <QtConcurrent>
 #include <atomic>
 #include <QFuture>
-
+#include <QComboBox>
+#include <unordered_map>
+#include <vector>
 class Functional : public QWidget
 {
 	Q_OBJECT
@@ -30,10 +32,13 @@ private:
 	QVector<QPointer<QPushButton>> buttons;
 	QFuture<void> future;
 	std::atomic<bool> runCur{ false };
+	QVector<QPointer<QComboBox>> mouseButtonsSelect;
+	std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName;
 
 	void initializationInterval(QVector<QPointer<QLineEdit>>& lines);
 	void initializationButtons(QVector<QPointer<QPushButton>>& buttons);
+	void initializationMouseButtons(QVector<QPointer<QComboBox>>& mouseButtonsSelect);
 
-	void ClickLMB();
+	void ClickLMB(const QString& key);
 
 };
