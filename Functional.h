@@ -17,6 +17,10 @@
 #include <QComboBox>
 #include <unordered_map>
 #include <vector>
+#include <QShortcut>
+#include <QSpinBox>
+#include <QRadioButton>
+
 class Functional : public QWidget
 {
 	Q_OBJECT
@@ -35,10 +39,15 @@ private:
 	QVector<QPointer<QComboBox>> mouseButtonsSelect;
 	std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName;
 
+	QPointer<QSpinBox> selectTimes;
+	QVector<QPointer<QRadioButton>> selectTimesBtn;
+
+	
+
 	void initializationInterval(QVector<QPointer<QLineEdit>>& lines);
 	void initializationButtons(QVector<QPointer<QPushButton>>& buttons);
 	void initializationMouseButtons(QVector<QPointer<QComboBox>>& mouseButtonsSelect);
-
+	void initializationTimesButtons(QVector<QPointer<QRadioButton>>& selectTimesBtn);
 	void ClickLMB(const QString& key);
 
 };

@@ -22,10 +22,19 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
     QGridLayout* mouseButtonsSelectLayout = new QGridLayout(mouseButtonsSelectGroup);
 
     initializationMouseButtons(mouseButtonsSelect);
-    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[0], 0, 0);
-    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[1], 1, 0);
 
+    mouseButtonsSelectLayout->addWidget(new QLabel("Mouse button:", this), 0, 0);
+    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[0], 0, 1);
+    mouseButtonsSelectLayout->addWidget(new QLabel("Click type:", this), 1, 0);
+    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[1], 1, 1);
 
+    QGroupBox* repeatClickGroup = new QGroupBox("Click Repeat", this);
+    QGridLayout* repeatClickLayout = new QGridLayout(repeatClickGroup);
+    initializationTimesButtons(selectTimesBtn);
+    repeatClickLayout->addWidget(selectTimesBtn[0], 0, 0);
+    repeatClickLayout->addWidget(selectTimes, 0, 1);
+    repeatClickLayout->addWidget(new QLabel("times", this), 0, 2);
+    repeatClickLayout->addWidget(selectTimesBtn[1], 1, 0);
 
     QGroupBox* buttonsGroup = new QGroupBox(this);
     QGridLayout* buttonsLayout = new QGridLayout(buttonsGroup);
@@ -34,19 +43,12 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
     buttonsLayout->addWidget(buttons[0], 0, 0);
     buttonsLayout->addWidget(buttons[1], 0, 1);
 
+    toolsContainer->addWidget(clickIntervalGroup, 0, 0, 1, 2);
+    toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0, 1, 1);
+    toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
+    toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
-
-
-
-
-
-
-
-    toolsContainer->addWidget(clickIntervalGroup, 0, 0);
-    toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0);
-    toolsContainer->addWidget(buttonsGroup, 2, 0);
-
-   
+    
 
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
@@ -95,6 +97,17 @@ void Functional::initializationMouseButtons(QVector<QPointer<QComboBox>>& mouseB
     mouseButtonsSelectName["Left"] = { MOUSEEVENTF_LEFTDOWN , MOUSEEVENTF_LEFTUP };
     mouseButtonsSelectName["Middle"] = { MOUSEEVENTF_MIDDLEDOWN , MOUSEEVENTF_MIDDLEUP };
     mouseButtonsSelectName["Right"] = { MOUSEEVENTF_RIGHTDOWN , MOUSEEVENTF_RIGHTUP };
+}
+
+void Functional::initializationTimesButtons(QVector<QPointer<QRadioButton>>& selectTimesBtn)
+{
+    selectTimesBtn.resize(2);
+    selectTimesBtn[0] = new QRadioButton("Repeat", this);
+    selectTimesBtn[1] = new QRadioButton("Repeat until sopped", this);
+    selectTimesBtn[1]->setChecked(true);
+    selectTimes = new QSpinBox(this);
+    selectTimes->setMinimum(1);       
+    selectTimes->setValue(1);
 }
 
 void Functional::ClickLMB(const QString& key)
