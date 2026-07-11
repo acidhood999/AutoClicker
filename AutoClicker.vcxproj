@@ -96,6 +96,8 @@
     <QtUic Include="AutoClicker.ui" />
     <QtMoc Include="AutoClicker.h" />
     <ClCompile Include="AutoClicker.cpp" />
+    <ClCompile Include="ClickLMR.cpp" />
+    <ClCompile Include="ClickLMR.h" />
     <ClCompile Include="Functional.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
