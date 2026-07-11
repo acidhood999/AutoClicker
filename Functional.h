@@ -34,20 +34,20 @@ private:
 	QPointer<QGridLayout> toolsContainer;
 	QVector<QPointer<QLineEdit>> lines;
 	QVector<QPointer<QPushButton>> buttons;
+	QPointer<QSpinBox> selectTimes;
+	QVector<QPointer<QRadioButton>> selectTimesBtn;
 	QFuture<void> future;
 	std::atomic<bool> runCur{ false };
 	QVector<QPointer<QComboBox>> mouseButtonsSelect;
 	std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName;
-
-	QPointer<QSpinBox> selectTimes;
-	QVector<QPointer<QRadioButton>> selectTimesBtn;
+	
 
 
 
-	void initializationInterval(QVector<QPointer<QLineEdit>>& lines);
-	void initializationButtons(QVector<QPointer<QPushButton>>& buttons);
-	void initializationMouseButtons(QVector<QPointer<QComboBox>>& mouseButtonsSelect);
-	void initializationTimesButtons(QVector<QPointer<QRadioButton>>& selectTimesBtn);
+	void initializationInterval();
+	void initializationButtons();
+	void initializationMouseButtons();
+	void initializationTimesButtons();
 	void ClickLMB(const QString& key);
 
 };
