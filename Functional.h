@@ -42,7 +42,7 @@ private:
 	QPointer<QSpinBox> selectTimes;
 	QVector<QPointer<QRadioButton>> selectTimesBtn;
 
-	
+
 
 	void initializationInterval(QVector<QPointer<QLineEdit>>& lines);
 	void initializationButtons(QVector<QPointer<QPushButton>>& buttons);

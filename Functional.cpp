@@ -53,6 +53,14 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
 
+
+    QShortcut* startShortcut = new QShortcut(QKeySequence(Qt::Key_F5), this);
+    connect(startShortcut, &QShortcut::activated , this, &Functional::buttonsClickStart);
+
+    QShortcut* stopShortcut = new QShortcut(QKeySequence(Qt::Key_F6), this);
+    connect(stopShortcut, &QShortcut::activated, this, &Functional::buttonsClickStop);
+
+
 }
 
 void Functional::initializationInterval(QVector<QPointer<QLineEdit>>& lines)
@@ -139,16 +147,26 @@ void Functional::buttonsClickStart()
     QString selectedKey = mouseButtonsSelect[0]->currentData().toString();
     bool controlClick = mouseButtonsSelect[1]->currentData().toBool();
 
-    future = QtConcurrent::run([this,ms_time,selectedKey, controlClick]()
+    int time_click = -1;
+    if(selectTimesBtn[0]->isChecked()) time_click = selectTimes->value();
+
+    future = QtConcurrent::run([this,ms_time,selectedKey, controlClick,time_click]() mutable
     {
         while (runCur)
         {
+            if (time_click == 0) break;
             ClickLMB(selectedKey);
             QThread::msleep(ms_time);
             if (!controlClick) ClickLMB(selectedKey);
-        }    
+            if (time_click > 0) time_click--;
+        }
+        runCur = false;
+        QMetaObject::invokeMethod(this, [this]() {
+            buttons[0]->setEnabled(true);
+            buttons[1]->setEnabled(false);
+            });
     });
-
+ 
 }
 void Functional::buttonsClickStop()
 {  
