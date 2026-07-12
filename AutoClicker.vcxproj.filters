@@ -43,15 +43,15 @@
     <ClCompile Include="Functional.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClickLMR.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="ClickLMR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Functional.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ClickLMR.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
