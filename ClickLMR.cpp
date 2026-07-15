@@ -1,12 +1,10 @@
 #include <ClickLMR.h>
 
-ClickLMR::ClickLMR()
-{
-}
+ClickLMR::ClickLMR(QObject* parent) : QObject(parent), clickSettings(std::make_unique<SettingsClicker>()) {}
 
 void ClickLMR::setSettings(const SettingsClicker& clickSettings)
 {
-	click = std::make_unique<SettingsClicker>(clickSettings);
+	this->clickSettings = std::make_unique<SettingsClicker>(clickSettings);
 }
 
 ClickLMR::~ClickLMR()

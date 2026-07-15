@@ -20,6 +20,7 @@
 #include <QShortcut>
 #include <QSpinBox>
 #include <QRadioButton>
+#include <ClickLMR.h>
 
 class Functional : public QWidget
 {

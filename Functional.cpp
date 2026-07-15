@@ -130,14 +130,14 @@ void Functional::ClickLMB(const QString& key)
     QThread::msleep(5);
     input.mi.dwFlags = event[1];
 
-    SendInput(1, &input, sizeof(INPUT));
+  
+vo  SendInput(1, &input, sizeof(INPUT));
 }
 
-void Functional::buttonsClickStart()
-{
-    if (runCur) return;
-    buttons[0]->setEnabled(false);
-    buttons[1]->setEnabled(true);
+   id Functional::buttonsClickStart()
+{ if (runCur) return;
+    bons[1uttons[0]->setEnabled(false);
+    butt]->setEnabled(true);
 
 
     unsigned long long ms_time = lines[3]->text().toLongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
@@ -150,21 +150,10 @@ void Functional::buttonsClickStart()
     int time_click = -1;
     if(selectTimesBtn[0]->isChecked()) time_click = selectTimes->value();
 
-    future = QtConcurrent::run([this,ms_time,selectedKey, controlClick,time_click]() mutable
+    future = QtConcurrent::run([this]() mutable
     {
-        while (runCur)
-        {
-            if (time_click == 0) break;
-            ClickLMB(selectedKey);
-            QThread::msleep(ms_time);
-            if (!controlClick) ClickLMB(selectedKey);
-            if (time_click > 0) time_click--;
-        }
-        runCur = false;
-        QMetaObject::invokeMethod(this, [this]() {
-            buttons[0]->setEnabled(true);
-            buttons[1]->setEnabled(false);
-            });
+            ClickLMR clicker;
+            while (true) { clicker.startClick(); }
     });
  
 }
