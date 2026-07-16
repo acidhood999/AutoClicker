@@ -9,7 +9,7 @@
 
 struct SettingsClicker
 {
-	unsigned long long ms_time{ 10 }; // время
+	unsigned long long ms_time{}; // время
 	QString selectedKey{ "Left" }; // какая кнопка
 	bool controlClick{ true }; // дабл клик
 	int time_click{}; // сколько раз
@@ -27,6 +27,7 @@ public:
 	{
 		click();
 	}
+
 	~ClickLMR();
 
 private:
@@ -48,7 +49,7 @@ private:
 
 		SendInput(1, &input, sizeof(INPUT));
 
-		QThread::msleep(5);
+		QThread::msleep(10);
 		input.mi.dwFlags = event[1];
 
 		SendInput(1, &input, sizeof(INPUT));

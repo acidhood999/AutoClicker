@@ -1,61 +1,35 @@
 #include "Functional.h"
 
-Functional::Functional(QWidget* parent) : QWidget(parent)
+Functional::Functional(QWidget* parent) : QWidget(parent), clickSettings(std::make_unique<SettingsClicker>()), mouseClick(std::make_unique<ClickLMR>())
+{
+    setupUi();
+
+}
+
+
+
+
+
+void Functional::setupUi()
 {
     toolsContainer = new QGridLayout(this);
 
-    QGroupBox* clickIntervalGroup = new QGroupBox("Click Interval", this);
-    QGridLayout* clickIntervalLayout = new QGridLayout(clickIntervalGroup);
-
-    initializationInterval();
-
-    clickIntervalLayout->addWidget(lines[0], 0, 0);
-    clickIntervalLayout->addWidget(new QLabel("h", this), 0, 1);
-    clickIntervalLayout->addWidget(lines[1], 0, 2);
-    clickIntervalLayout->addWidget(new QLabel("m", this), 0, 3);
-    clickIntervalLayout->addWidget(lines[2], 0, 4);
-    clickIntervalLayout->addWidget(new QLabel("s", this), 0, 5);
-    clickIntervalLayout->addWidget(lines[3], 0, 6);
-    clickIntervalLayout->addWidget(new QLabel("ms", this), 0, 7);
-
-    QGroupBox* mouseButtonsSelectGroup = new QGroupBox("Click Options", this);
-    QGridLayout* mouseButtonsSelectLayout = new QGridLayout(mouseButtonsSelectGroup);
-
-    initializationMouseButtons();
-    mouseButtonsSelectLayout->addWidget(new QLabel("Mouse button:", this), 0, 0);
-    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[0], 0, 1);
-    mouseButtonsSelectLayout->addWidget(new QLabel("Click type:", this), 1, 0);
-    mouseButtonsSelectLayout->addWidget(mouseButtonsSelect[1], 1, 1);
-
-    QGroupBox* repeatClickGroup = new QGroupBox("Click Repeat", this);
-    QGridLayout* repeatClickLayout = new QGridLayout(repeatClickGroup);
-
-    initializationTimesButtons();
-    repeatClickLayout->addWidget(selectTimesBtn[0], 0, 0);
-    repeatClickLayout->addWidget(selectTimes, 0, 1);
-    repeatClickLayout->addWidget(new QLabel("times", this), 0, 2);
-    repeatClickLayout->addWidget(selectTimesBtn[1], 1, 0);
-
-    QGroupBox* buttonsGroup = new QGroupBox(this);
-    QGridLayout* buttonsLayout = new QGridLayout(buttonsGroup);
-
-    initializationButtons();
-    buttonsLayout->addWidget(buttons[0], 0, 0);
-    buttonsLayout->addWidget(buttons[1], 0, 1);
+    QGroupBox* clickIntervalGroup = createClickIntervalGroup();
+    QGroupBox* mouseButtonsSelectGroup = createMouseButtonsSelectGroup();
+    QGroupBox* repeatClickGroup = createRepeatClickGroup();
+    QGroupBox* buttonsGroup = createButtonsGroup();
 
     toolsContainer->addWidget(clickIntervalGroup, 0, 0, 1, 2);
     toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0, 1, 1);
     toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
-    
-
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
 
 
     QShortcut* startShortcut = new QShortcut(QKeySequence(Qt::Key_F5), this);
-    connect(startShortcut, &QShortcut::activated , this, &Functional::buttonsClickStart);
+    connect(startShortcut, &QShortcut::activated, this, &Functional::buttonsClickStart);
 
     QShortcut* stopShortcut = new QShortcut(QKeySequence(Qt::Key_F6), this);
     connect(stopShortcut, &QShortcut::activated, this, &Functional::buttonsClickStop);
@@ -63,9 +37,29 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
 
 }
 
+QGroupBox* Functional::createClickIntervalGroup()
+{
+    QGroupBox* group = new QGroupBox("Click Interval", this);
+    QGridLayout* layout = new QGridLayout(group);
+
+    initializationInterval();
+
+    layout->addWidget(lines[0], 0, 0);
+    layout->addWidget(new QLabel("h", this), 0, 1);
+    layout->addWidget(lines[1], 0, 2);
+    layout->addWidget(new QLabel("m", this), 0, 3);
+    layout->addWidget(lines[2], 0, 4);
+    layout->addWidget(new QLabel("s", this), 0, 5);
+    layout->addWidget(lines[3], 0, 6);
+    layout->addWidget(new QLabel("ms", this), 0, 7);
+
+    return group;
+}
+
+
 void Functional::initializationInterval()
 {
- 
+
     lines.resize(4);
     for (int i = 0; i < lines.size();++i)
     {
@@ -102,9 +96,7 @@ void Functional::initializationMouseButtons()
     mouseButtonsSelect[1]->addItem("Single", true);
     mouseButtonsSelect[1]->addItem("Double", false);
 
-    mouseButtonsSelectName["Left"] = { MOUSEEVENTF_LEFTDOWN , MOUSEEVENTF_LEFTUP };
-    mouseButtonsSelectName["Middle"] = { MOUSEEVENTF_MIDDLEDOWN , MOUSEEVENTF_MIDDLEUP };
-    mouseButtonsSelectName["Right"] = { MOUSEEVENTF_RIGHTDOWN , MOUSEEVENTF_RIGHTUP };
+   
 }
 
 void Functional::initializationTimesButtons()
@@ -114,60 +106,83 @@ void Functional::initializationTimesButtons()
     selectTimesBtn[1] = new QRadioButton("Repeat until sopped", this);
     selectTimesBtn[1]->setChecked(true);
     selectTimes = new QSpinBox(this);
-    selectTimes->setMinimum(1);       
+    selectTimes->setMinimum(1);
     selectTimes->setValue(1);
 }
 
-void Functional::ClickLMB(const QString& key)
-{
-    INPUT input = {0};
-    const auto& event = mouseButtonsSelectName.at(key);
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = event[0];
-
-    SendInput(1, &input, sizeof(INPUT));
-
-    QThread::msleep(5);
-    input.mi.dwFlags = event[1];
-
-  
-vo  SendInput(1, &input, sizeof(INPUT));
-}
-
-   id Functional::buttonsClickStart()
-{ if (runCur) return;
-    bons[1uttons[0]->setEnabled(false);
-    butt]->setEnabled(true);
 
 
-    unsigned long long ms_time = lines[3]->text().toLongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
-    if (ms_time < 10) ms_time = 10;
-    runCur = true;
+void Functional::buttonsClickStart()
+{ 
+    clickSettings->ms_time = lines[3]->text().toULongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
+    clickSettings->selectedKey = mouseButtonsSelect[0]->currentData().toString();
+    clickSettings->controlClick = mouseButtonsSelect[1]->currentData().toBool();
+    if (selectTimesBtn[0]->isChecked()) clickSettings->time_click = selectTimes->value();
+    else clickSettings->time_click = 0;
 
-    QString selectedKey = mouseButtonsSelect[0]->currentData().toString();
-    bool controlClick = mouseButtonsSelect[1]->currentData().toBool();
+    mouseClick->setSettings(*clickSettings);
 
-    int time_click = -1;
-    if(selectTimesBtn[0]->isChecked()) time_click = selectTimes->value();
+    while (true) { mouseClick->startClick(); }
 
-    future = QtConcurrent::run([this]() mutable
-    {
-            ClickLMR clicker;
-            while (true) { clicker.startClick(); }
-    });
  
 }
+
 void Functional::buttonsClickStop()
 {  
-    runCur = false;
+   
     buttons[0]->setEnabled(true);
     buttons[1]->setEnabled(false);
 }
 
+
+
+QGroupBox* Functional::createMouseButtonsSelectGroup()
+{
+
+    QGroupBox* group = new QGroupBox("Click Options", this);
+    QGridLayout* layout = new QGridLayout(group);
+
+    initializationMouseButtons();
+
+    layout->addWidget(new QLabel("Mouse button:", this), 0, 0);
+    layout->addWidget(mouseButtonsSelect[0], 0, 1);
+    layout->addWidget(new QLabel("Click type:", this), 1, 0);
+    layout->addWidget(mouseButtonsSelect[1], 1, 1);
+
+    return group;
+}
+
+QGroupBox* Functional::createRepeatClickGroup()
+{
+    QGroupBox* group = new QGroupBox("Click Repeat", this);
+    QGridLayout* layout = new QGridLayout(group);
+
+    initializationTimesButtons();
+
+    layout->addWidget(selectTimesBtn[0], 0, 0);
+    layout->addWidget(selectTimes, 0, 1);
+    layout->addWidget(new QLabel("times", this), 0, 2);
+    layout->addWidget(selectTimesBtn[1], 1, 0);
+
+    return group;
+}
+
+QGroupBox* Functional::createButtonsGroup()
+{
+    QGroupBox* group = new QGroupBox(this);
+    QGridLayout* layout = new QGridLayout(group);
+
+    initializationButtons();
+
+    layout->addWidget(buttons[0], 0, 0);
+    layout->addWidget(buttons[1], 0, 1);
+
+
+    return group;
+}
+
 Functional::~Functional()
 {
-    runCur = false;
-    if (future.isRunning()) future.waitForFinished();
 }
 
 

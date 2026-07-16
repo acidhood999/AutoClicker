@@ -21,34 +21,48 @@
 #include <QSpinBox>
 #include <QRadioButton>
 #include <ClickLMR.h>
+#include <memory>
 
 class Functional : public QWidget
 {
 	Q_OBJECT
 public:
+
 	Functional(QWidget* parent);
 	~Functional();	
+
 private slots:
+
 	void buttonsClickStart();
 	void buttonsClickStop();
+
 private:
+
 	QPointer<QGridLayout> toolsContainer;
+
 	QVector<QPointer<QLineEdit>> lines;
 	QVector<QPointer<QPushButton>> buttons;
 	QPointer<QSpinBox> selectTimes;
 	QVector<QPointer<QRadioButton>> selectTimesBtn;
-	QFuture<void> future;
-	std::atomic<bool> runCur{ false };
 	QVector<QPointer<QComboBox>> mouseButtonsSelect;
-	std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName;
+
+	std::unique_ptr<ClickLMR> mouseClick;
+
+	std::unique_ptr<SettingsClicker> clickSettings;
 	
 
 
+	QGroupBox* createClickIntervalGroup();
+	QGroupBox* createMouseButtonsSelectGroup();
+	QGroupBox* createRepeatClickGroup();
+	QGroupBox* createButtonsGroup();
 
 	void initializationInterval();
 	void initializationButtons();
 	void initializationMouseButtons();
 	void initializationTimesButtons();
-	void ClickLMB(const QString& key);
+
+	void setupUi();
+
 
 };
