@@ -1,14 +1,20 @@
 #include "Functional.h"
 
-Functional::Functional(QWidget* parent) : QWidget(parent), clickSettings(std::make_unique<SettingsClicker>()), mouseClick(std::make_unique<ClickLMR>())
+Functional::Functional(QWidget* parent) : QWidget(parent)
 {
+    clickSettings = std::make_unique<SettingsClicker>();
+
+    mouseClick = new ClickLMR();// !!!!
+    clickThread = new QThread(this);// !!!!
+
+    mouseClick->moveToThread(clickThread);// !!!!
+
+    connect(clickThread, &QThread::started, mouseClick, &ClickLMR::startClick);// !!!!
+    connect(mouseClick, &ClickLMR::finished, clickThread, &QThread::quit);// !!!!
+    connect(mouseClick, &ClickLMR::finished, this, &Functional::buttonsClickStop);// !!!!
+
     setupUi();
-
 }
-
-
-
-
 
 void Functional::setupUi()
 {
@@ -24,8 +30,6 @@ void Functional::setupUi()
     toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
-    connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
-    connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
 
 
     QShortcut* startShortcut = new QShortcut(QKeySequence(Qt::Key_F5), this);
@@ -33,6 +37,12 @@ void Functional::setupUi()
 
     QShortcut* stopShortcut = new QShortcut(QKeySequence(Qt::Key_F6), this);
     connect(stopShortcut, &QShortcut::activated, this, &Functional::buttonsClickStop);
+
+    connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
+    connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
+
+
+ 
 
 
 }
@@ -64,12 +74,14 @@ void Functional::initializationInterval()
     for (int i = 0; i < lines.size();++i)
     {
         lines[i] = new QLineEdit(this);
+        lines[i]->setText("0");
         lines[i]->setFocusPolicy(Qt::StrongFocus);
         lines[i]->installEventFilter(this);
         lines[i]->setAlignment(Qt::AlignRight);
         lines[i]->setContextMenuPolicy(Qt::NoContextMenu);
         lines[i]->setValidator(new QIntValidator(this));
     }
+    lines[3]->setText("100");
 }
 
 void Functional::initializationButtons()
@@ -114,22 +126,28 @@ void Functional::initializationTimesButtons()
 
 void Functional::buttonsClickStart()
 { 
+    if (clickThread->isRunning()) return;// !!!!
+
     clickSettings->ms_time = lines[3]->text().toULongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect[0]->currentData().toString();
     clickSettings->controlClick = mouseButtonsSelect[1]->currentData().toBool();
     if (selectTimesBtn[0]->isChecked()) clickSettings->time_click = selectTimes->value();
-    else clickSettings->time_click = 0;
+    else clickSettings->time_click = -1;
 
     mouseClick->setSettings(*clickSettings);
 
-    while (true) { mouseClick->startClick(); }
-
+    buttons[0]->setEnabled(false);
+    buttons[1]->setEnabled(true);
  
+    clickThread->start();// !!!!
 }
 
 void Functional::buttonsClickStop()
 {  
    
+    mouseClick->stop(); // !!!!
+
+ 
     buttons[0]->setEnabled(true);
     buttons[1]->setEnabled(false);
 }
@@ -183,6 +201,12 @@ QGroupBox* Functional::createButtonsGroup()
 
 Functional::~Functional()
 {
+    if (clickThread->isRunning()) {// !!!!
+        mouseClick->stop(); // !!!!
+        clickThread->quit(); // !!!!
+        clickThread->wait(); // !!!!
+    }
+    delete mouseClick;// !!!!
 }
 
 

@@ -7,6 +7,11 @@ void ClickLMR::setSettings(const SettingsClicker& clickSettings)
 	this->clickSettings = std::make_unique<SettingsClicker>(clickSettings);
 }
 
+void ClickLMR::stop()
+{
+	threadRun = false;
+}
+
 ClickLMR::~ClickLMR()
 {
 }

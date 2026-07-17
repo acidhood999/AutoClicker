@@ -22,6 +22,7 @@
 #include <QRadioButton>
 #include <ClickLMR.h>
 #include <memory>
+#include <QThread>
 
 class Functional : public QWidget
 {
@@ -46,7 +47,8 @@ private:
 	QVector<QPointer<QRadioButton>> selectTimesBtn;
 	QVector<QPointer<QComboBox>> mouseButtonsSelect;
 
-	std::unique_ptr<ClickLMR> mouseClick;
+	ClickLMR* mouseClick;
+	QThread* clickThread;
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
