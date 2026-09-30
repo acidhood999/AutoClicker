@@ -9,6 +9,9 @@
 #include <atomic>
 #include <QCoreApplication>
 
+
+
+
 struct SettingsClicker
 {
 	unsigned long long ms_time{}; // время

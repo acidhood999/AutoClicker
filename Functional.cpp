@@ -2,6 +2,8 @@
 
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
+    RegisterHotKey((HWND)this->winId(), 1001, 0, VK_F6);
+
     clickSettings = std::make_unique<SettingsClicker>();
 
     mouseClick = new ClickLMR();// !!!!
@@ -31,12 +33,7 @@ void Functional::setupUi()
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
 
-
-    QShortcut* startShortcut = new QShortcut(QKeySequence(Qt::Key_F5), this);
-    connect(startShortcut, &QShortcut::activated, this, &Functional::buttonsClickStart);
-
-    QShortcut* stopShortcut = new QShortcut(QKeySequence(Qt::Key_F6), this);
-    connect(stopShortcut, &QShortcut::activated, this, &Functional::buttonsClickStop);
+   
 
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
@@ -86,12 +83,13 @@ void Functional::initializationInterval()
 
 void Functional::initializationButtons()
 {
-    buttons.resize(2);
+    buttons.resize(4);
     for (int i = 0; i < buttons.size();++i) buttons[i] = new QPushButton(this);
 
     buttons[0]->setText("Start");
     buttons[1]->setText("Stop");
     buttons[1]->setEnabled(false);
+    buttons[2]->setText("Hotkey setting");
 }
 
 void Functional::initializationMouseButtons()
@@ -127,7 +125,7 @@ void Functional::initializationTimesButtons()
 void Functional::buttonsClickStart()
 { 
     if (clickThread->isRunning()) return;// !!!!
-
+   
     clickSettings->ms_time = lines[3]->text().toULongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect[0]->currentData().toString();
     clickSettings->controlClick = mouseButtonsSelect[1]->currentData().toBool();
@@ -194,9 +192,32 @@ QGroupBox* Functional::createButtonsGroup()
 
     layout->addWidget(buttons[0], 0, 0);
     layout->addWidget(buttons[1], 0, 1);
-
+    layout->addWidget(buttons[2], 1, 0);
+    layout->addWidget(buttons[3], 1, 1);
 
     return group;
+}
+
+void Functional::toggleClick()
+{
+    if (clickThread && clickThread->isRunning()) buttonsClickStop();
+    else buttonsClickStart();
+}
+
+bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* result)
+{
+    Q_UNUSED(event);
+    Q_UNUSED(result);
+
+    MSG* msg = static_cast<MSG*>(message);
+    if (msg->message == WM_HOTKEY) {
+        if (msg->wParam == 1001) { 
+            toggleClick(); 
+            return true;   
+        }
+    }
+
+    return QWidget::nativeEvent(event, message, result);
 }
 
 Functional::~Functional()
@@ -206,6 +227,7 @@ Functional::~Functional()
         clickThread->quit(); // !!!!
         clickThread->wait(); // !!!!
     }
+    UnregisterHotKey((HWND)this->winId(), 1001);
     delete mouseClick;// !!!!
 }
 

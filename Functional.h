@@ -36,6 +36,10 @@ private slots:
 
 	void buttonsClickStart();
 	void buttonsClickStop();
+	void toggleClick();
+
+protected:
+	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
 
 private:
 
