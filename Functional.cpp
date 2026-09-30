@@ -37,7 +37,7 @@ void Functional::setupUi()
 
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
-
+    connect(buttons[2], &QPushButton::clicked, this, &Functional::buttonsClickHotkeySett);
 
  
 
@@ -202,6 +202,17 @@ void Functional::toggleClick()
 {
     if (clickThread && clickThread->isRunning()) buttonsClickStop();
     else buttonsClickStart();
+}
+
+void Functional::buttonsClickHotkeySett()
+{
+   
+    std::unique_ptr<SettingHotkey> dialog = std::make_unique<SettingHotkey>(this);
+
+    if (dialog->exec() == QDialog::Accepted)
+    {
+    }
+
 }
 
 bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* result)

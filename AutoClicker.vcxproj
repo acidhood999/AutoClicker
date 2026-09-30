@@ -99,10 +99,14 @@
     <ClCompile Include="ClickLMR.cpp" />
     <QtMoc Include="ClickLMR.h" />
     <ClCompile Include="Functional.cpp" />
+    <ClCompile Include="HotkeySetting.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Functional.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="HotkeySetting.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

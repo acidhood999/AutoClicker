@@ -23,6 +23,7 @@
 #include <ClickLMR.h>
 #include <memory>
 #include <QThread>
+#include "HotkeySetting.h"
 
 class Functional : public QWidget
 {
@@ -37,6 +38,8 @@ private slots:
 	void buttonsClickStart();
 	void buttonsClickStop();
 	void toggleClick();
+
+	void buttonsClickHotkeySett();
 
 protected:
 	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
