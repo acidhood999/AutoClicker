@@ -24,6 +24,7 @@
 #include <memory>
 #include <QThread>
 #include "HotkeySetting.h"
+#include <QMessageBox>
 
 class Functional : public QWidget
 {
@@ -59,8 +60,8 @@ private:
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
-
-
+	SettingHotkey* dialog;
+	UINT vk = VK_F6;
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();
 	QGroupBox* createRepeatClickGroup();

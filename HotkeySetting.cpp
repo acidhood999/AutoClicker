@@ -23,6 +23,8 @@ SettingHotkey::SettingHotkey(QWidget* parent) : QDialog(parent)
 	connect(btnCancel,&QPushButton::clicked, this,&QDialog::close);
 
 	connect(btnChangeHot, &QPushButton::clicked, this, &SettingHotkey::changeHotKey);
+	connect(btnSave, &QPushButton::clicked, this, &QDialog::accept);
+
 
 }
 
@@ -71,17 +73,19 @@ void SettingHotkey::changeHotKey()
 		s_hHook = NULL;
 	}
 
-	QString text = "";
-	if (ctrlPress)  text += "Ctrl + ";
-	if (altPress)   text += "Alt + ";
-	if (shiftPress) text += "Shift + ";
-	text += QString("VK_%1").arg(saveVkCode);
-	outHotkey->setText(text);
+	
+	if (ctrlPress)  newTextVk += "Ctrl + ";
+	if (altPress)   newTextVk += "Alt + ";
+	if (shiftPress) newTextVk += "Shift + ";
+	newTextVk += QString("VK_%1").arg(saveVkCode);
+	outHotkey->setText(newTextVk);
 
 	btnChangeHot->setEnabled(true);
 	btnSave->setEnabled(true);
 	btnCancel->setEnabled(true);
 }
+
+
 
 SettingHotkey::~SettingHotkey()
 {

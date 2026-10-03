@@ -15,10 +15,12 @@ public:
 	SettingHotkey(QWidget* parent = nullptr);
 	~SettingHotkey();
 
+	UINT getNumHotkey() { return saveVkCode; }
 
 private slots:
 	
 	void changeHotKey();
+
 
 private:
 	QPointer<QPushButton> btnChangeHot;
@@ -26,7 +28,7 @@ private:
 	QPointer<QPushButton> btnCancel;
 	QPointer<QLineEdit> outHotkey;
 	
-	DWORD saveVkCode = 0;
+	DWORD saveVkCode = VK_F6;
 	bool ctrlPress = false;
 	bool altPress = false;
 	bool shiftPress = false;
@@ -36,6 +38,8 @@ private:
 	static HHOOK s_hHook;
 	static SettingHotkey* s_instance;
 	QEventLoop* m_loop = nullptr;
+
+	QString newTextVk = "";
 
 	void initializationButtons()
 	{

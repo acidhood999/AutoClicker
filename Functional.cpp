@@ -2,7 +2,7 @@
 
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
-    RegisterHotKey((HWND)this->winId(), 1001, 0, VK_F6);
+    RegisterHotKey((HWND)this->winId(), 1001, 0, vk);
 
     clickSettings = std::make_unique<SettingsClicker>();
 
@@ -206,11 +206,12 @@ void Functional::toggleClick()
 
 void Functional::buttonsClickHotkeySett()
 {
-   
-    std::unique_ptr<SettingHotkey> dialog = std::make_unique<SettingHotkey>(this);
+    dialog = new SettingHotkey(this);
 
     if (dialog->exec() == QDialog::Accepted)
     {
+        UnregisterHotKey((HWND)this->winId(), 1001);
+        if (RegisterHotKey((HWND)this->winId(), 1001, 0, dialog->getNumHotkey())) vk = dialog->getNumHotkey(); 
     }
 
 }
