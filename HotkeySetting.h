@@ -31,7 +31,7 @@ private:
 	bool altPress = false;
 	bool shiftPress = false;
 
-	static LRESULT CALLBACK RebindHotket(int nCodem, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK RebindHotkey(int nCodem, WPARAM wParam, LPARAM lParam);
 
 	static HHOOK s_hHook;
 	static SettingHotkey* s_instance;

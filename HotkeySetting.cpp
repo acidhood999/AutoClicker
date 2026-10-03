@@ -26,7 +26,7 @@ SettingHotkey::SettingHotkey(QWidget* parent) : QDialog(parent)
 
 }
 
-LRESULT SettingHotkey::RebindHotket(int nCode, WPARAM wParam, LPARAM lParam)
+LRESULT SettingHotkey::RebindHotkey(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode >= 0 && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
 	{
@@ -59,7 +59,28 @@ void SettingHotkey::changeHotKey()
 	btnSave->setEnabled(false);
 	btnCancel->setEnabled(false);
 
-	
+	s_instance = this;
+	s_hHook = SetWindowsHookEx(WH_KEYBOARD_LL, RebindHotkey, GetModuleHandle(NULL), 0);
+
+	if (s_hHook)
+	{
+		QEventLoop loop;
+		m_loop = &loop;
+		loop.exec();
+		UnhookWindowsHookEx(s_hHook);
+		s_hHook = NULL;
+	}
+
+	QString text = "";
+	if (ctrlPress)  text += "Ctrl + ";
+	if (altPress)   text += "Alt + ";
+	if (shiftPress) text += "Shift + ";
+	text += QString("VK_%1").arg(saveVkCode);
+	outHotkey->setText(text);
+
+	btnChangeHot->setEnabled(true);
+	btnSave->setEnabled(true);
+	btnCancel->setEnabled(true);
 }
 
 SettingHotkey::~SettingHotkey()
