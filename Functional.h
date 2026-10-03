@@ -55,12 +55,12 @@ private:
 	QVector<QPointer<QRadioButton>> selectTimesBtn;
 	QVector<QPointer<QComboBox>> mouseButtonsSelect;
 
-	ClickLMR* mouseClick;
-	QThread* clickThread;
+	ClickLMR* mouseClick = nullptr;;
+	QThread* clickThread = nullptr;;
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
-	SettingHotkey* dialog;
+	SettingHotkey* dialog = nullptr;;
 	UINT vk = VK_F6;
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();

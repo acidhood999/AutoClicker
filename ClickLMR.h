@@ -9,9 +9,6 @@
 #include <atomic>
 #include <QCoreApplication>
 
-
-
-
 struct SettingsClicker
 {
 	unsigned long long ms_time{}; // время
@@ -42,7 +39,19 @@ public slots:
 		{
 			click();
 			if (!clickSettings->controlClick) click();
-			QThread::msleep(clickSettings->ms_time);					
+
+			unsigned long long totalDelay = clickSettings->ms_time;
+			const unsigned long long step = 10;
+
+			while (threadRun && totalDelay > 0)
+			{
+				unsigned long long currSleep = totalDelay;
+				if (totalDelay > step) currSleep = step;
+				QThread::msleep(currSleep);
+				totalDelay -= currSleep;
+			}
+
+			if (!threadRun)break;			
 			if (clickSettings->time_click > 0)clickSettings->time_click--;
 		}
 
