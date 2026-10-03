@@ -3,7 +3,7 @@
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
     clickSettings = std::make_unique<SettingsClicker>();
-
+    
     setupUi();
     RegisterHotKey((HWND)this->winId(), 1001, 0, vk);
 }
@@ -69,8 +69,8 @@ void Functional::initializationButtons()
     buttons.resize(4);
     for (int i = 0; i < buttons.size();++i) buttons[i] = new QPushButton(this);
 
-    buttons[0]->setText("Start");
-    buttons[1]->setText("Stop");
+    buttons[0]->setText("Start (" + dialog->vkToString(vk) + ")");
+    buttons[1]->setText("Stop (" + dialog->vkToString(vk) + ")");
     buttons[1]->setEnabled(false);
     buttons[2]->setText("Hotkey setting");
 }
@@ -215,7 +215,12 @@ void Functional::buttonsClickHotkeySett()
     if (dialog->exec() == QDialog::Accepted)
     {
         UnregisterHotKey((HWND)this->winId(), 1001);
-        if (RegisterHotKey((HWND)this->winId(), 1001, 0, dialog->getNumHotkey())) vk = dialog->getNumHotkey(); 
+        if (RegisterHotKey((HWND)this->winId(), 1001, 0, dialog->getNumHotkey()))
+        {
+            vk = dialog->getNumHotkey();
+            buttons[0]->setText("Start (" + dialog->vkToString(vk) + ")");
+            buttons[1]->setText("Stop (" + dialog->vkToString(vk) + ")");
+        }
     }
 
 }
