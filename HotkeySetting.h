@@ -17,6 +17,7 @@ private:
 	QPointer<QPushButton> btnSave;
 	QPointer<QPushButton> btnCancel;
 	QPointer<QLineEdit> outHotkey;
+
 	void initializationButtons()
 	{
 		btnChangeHot = new QPushButton("Start / Stop", this);
