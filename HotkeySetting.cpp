@@ -1,7 +1,7 @@
 #include "HotkeySetting.h"
 
 HHOOK SettingHotkey::s_hHook = NULL;
-std::unique_ptr<SettingHotkey> SettingHotkey::s_instance = nullptr;
+SettingHotkey* SettingHotkey::s_instance = nullptr;
 
 SettingHotkey::SettingHotkey(QWidget* parent) : QDialog(parent)
 {
@@ -36,18 +36,18 @@ LRESULT SettingHotkey::RebindHotket(int nCode, WPARAM wParam, LPARAM lParam)
 			vk != VK_LSHIFT && vk != VK_RSHIFT &&
 			vk != VK_LMENU && vk != VK_RMENU)
 		{
-			s_instance->saveVkCode = vk;
-			s_instance->ctrlPress = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
-			s_instance->altPress = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
-			s_instance->shiftPress = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+			if (s_instance)
+			{
+				s_instance->saveVkCode = vk;
+				s_instance->ctrlPress = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+				s_instance->altPress = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+				s_instance->shiftPress = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 
-			
-
-			PostQuitMessage(0);
+				if (s_instance->m_loop) s_instance->m_loop->quit();
+			}
 			return 1;
 		}
 	}
-
 	return CallNextHookEx(s_hHook, nCode, wParam, lParam);
 }
 
@@ -55,6 +55,10 @@ LRESULT SettingHotkey::RebindHotket(int nCode, WPARAM wParam, LPARAM lParam)
 
 void SettingHotkey::changeHotKey()
 {
+	btnChangeHot->setEnabled(false);
+	btnSave->setEnabled(false);
+	btnCancel->setEnabled(false);
+
 	
 }
 

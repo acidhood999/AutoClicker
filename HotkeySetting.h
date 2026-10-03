@@ -34,7 +34,7 @@ private:
 	static LRESULT CALLBACK RebindHotket(int nCodem, WPARAM wParam, LPARAM lParam);
 
 	static HHOOK s_hHook;
-	static std::unique_ptr<SettingHotkey> s_instance;
+	static SettingHotkey* s_instance;
 	QEventLoop* m_loop = nullptr;
 
 	void initializationButtons()
@@ -43,6 +43,8 @@ private:
 		btnSave = new QPushButton("Save",this);
 		btnCancel = new QPushButton("Cancel",this);
 		outHotkey = new QLineEdit(this);
+		outHotkey->setAlignment(Qt::AlignCenter);
+		outHotkey->setText("F6");
 		outHotkey->setReadOnly(true);
 	}
 };
