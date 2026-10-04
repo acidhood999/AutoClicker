@@ -13,7 +13,7 @@ AutoClicker::AutoClicker(QWidget *parent)
 void AutoClicker::settingWindow()
 {
     setWindowTitle("Auto Clicker");
-    setFixedSize(800,600);
+    setFixedSize(600,450);
 }
 
 AutoClicker::~AutoClicker() {}

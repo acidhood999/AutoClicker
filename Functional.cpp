@@ -20,11 +20,15 @@ void Functional::setupUi()
     buttonsGroup->setFixedHeight(150);
     buttonsGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
+    clickIntervalGroup->setFixedHeight(100);
+    clickIntervalGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     toolsContainer->addWidget(clickIntervalGroup, 0, 0, 1, 2);
     toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0, 1, 1);
     toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
+    
 
     connect(btnStart, &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(btnStop, &QPushButton::clicked, this, &Functional::buttonsClickStop);
@@ -36,20 +40,24 @@ QGroupBox* Functional::createClickIntervalGroup()
     QGroupBox* group = new QGroupBox("Click Interval", this);
     QGridLayout* layout = new QGridLayout(group);
 
-    initializationInterval(linesH);
-    initializationInterval(linesM);
-    initializationInterval(linesS);
-    initializationInterval(linesMs);
-    linesMs->setText("100");
+    initializationInterval(lineH);
+    initializationInterval(lineM);
+    initializationInterval(lineS);
+    initializationInterval(lineMs);
+    lineMs->setText("100");
 
-    layout->addWidget(linesH, 0, 0);
+    initializationButtonsOffset();
+
+    layout->addWidget(lineH, 0, 0);
     layout->addWidget(new QLabel("h", this), 0, 1);
-    layout->addWidget(linesM, 0, 2);
+    layout->addWidget(lineM, 0, 2);
     layout->addWidget(new QLabel("m", this), 0, 3);
-    layout->addWidget(linesS, 0, 4);
+    layout->addWidget(lineS, 0, 4);
     layout->addWidget(new QLabel("s", this), 0, 5);
-    layout->addWidget(linesMs, 0, 6);
+    layout->addWidget(lineMs, 0, 6);
     layout->addWidget(new QLabel("ms", this), 0, 7);
+
+    layout->addLayout(toolsOffsetH, 1, 0, 1, 3);
 
     return group;
 }
@@ -113,13 +121,29 @@ void Functional::initializationTimesButtons()
     selectTimes->setValue(1);
 }
 
+void Functional::initializationButtonsOffset()
+{
+    toolsOffsetH = new QHBoxLayout();
+
+    offsetRand = new QCheckBox(this);
+    initializationInterval(lineOffset);
+    lineOffset->setText("50");
+    lineOffset->setFixedWidth(80);
+    toolsOffsetH->addWidget(offsetRand);
+    toolsOffsetH->addWidget(new QLabel("Random Offset", this));
+
+    toolsOffsetH->addWidget(lineOffset);
+    toolsOffsetH->addWidget(new QLabel("ms", this));
+    toolsOffsetH->addStretch();
+}
+
 
 
 void Functional::buttonsClickStart()
 { 
     if (clickThread && clickThread->isRunning()) return;// !!!!
 
-    clickSettings->ms_time = linesMs->text().toULongLong() + (linesS->text().toLongLong() * 1000) + (linesM->text().toLongLong() * 60000) + (linesH->text().toLongLong() * 3600000);
+    clickSettings->ms_time = lineMs->text().toULongLong() + (lineS->text().toLongLong() * 1000) + (lineM->text().toLongLong() * 60000) + (lineH->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect->currentData().toString();
     clickSettings->controlClick = mouseButtonsSelectClick->currentData().toBool();
     if (selectTimesBtnRepeat->isChecked()) clickSettings->time_click = selectTimes->value();
@@ -155,15 +179,13 @@ void Functional::buttonsClickStart()
     clickThread->start();// !!!!
 }
 
+
 void Functional::buttonsClickStop()
 {  
-   
     if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop(); // !!!!
- 
     btnStart->setEnabled(true);
     btnStop->setEnabled(false);
 }
-
 
 
 QGroupBox* Functional::createMouseButtonsSelectGroup()

@@ -25,6 +25,9 @@
 #include <QThread>
 #include "HotkeySetting.h"
 #include <QMessageBox>
+#include <QCheckBox>
+#include <QHBoxLayout>
+
 
 class Functional : public QWidget
 {
@@ -48,11 +51,13 @@ protected:
 private:
 
 	QPointer<QGridLayout> toolsContainer;
+	QPointer<QHBoxLayout> toolsOffsetH;
 
-	QPointer<QLineEdit> linesMs;
-	QPointer<QLineEdit> linesS;
-	QPointer<QLineEdit> linesM;
-	QPointer<QLineEdit> linesH;
+	QPointer<QLineEdit> lineMs;
+	QPointer<QLineEdit> lineS;
+	QPointer<QLineEdit> lineM;
+	QPointer<QLineEdit> lineH;
+
 
 	QPointer<QPushButton> btnStart;
 	QPointer<QPushButton> btnStop;
@@ -60,13 +65,15 @@ private:
 
 	QPointer<QSpinBox> selectTimes;
 
-
 	QPointer<QRadioButton> selectTimesBtnRepeat;
 	QPointer<QRadioButton> selectTimesBtnRepeatUnStp;
 
 	QPointer<QComboBox> mouseButtonsSelect;
 	QPointer<QComboBox> mouseButtonsSelectClick;
 	
+
+	QPointer<QCheckBox> offsetRand;
+	QPointer<QLineEdit> lineOffset;
 
 	ClickLMR* mouseClick = nullptr;
 	QThread* clickThread = nullptr;
@@ -86,6 +93,7 @@ private:
 	void initializationButtons();
 	void initializationMouseButtons();
 	void initializationTimesButtons();
+	void initializationButtonsOffset();
 
 	void setupUi();
 
