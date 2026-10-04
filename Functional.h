@@ -49,14 +49,27 @@ private:
 
 	QPointer<QGridLayout> toolsContainer;
 
-	QVector<QPointer<QLineEdit>> lines;
-	QVector<QPointer<QPushButton>> buttons;
-	QPointer<QSpinBox> selectTimes;
-	QVector<QPointer<QRadioButton>> selectTimesBtn;
-	QVector<QPointer<QComboBox>> mouseButtonsSelect;
+	QPointer<QLineEdit> linesMs;
+	QPointer<QLineEdit> linesS;
+	QPointer<QLineEdit> linesM;
+	QPointer<QLineEdit> linesH;
 
-	ClickLMR* mouseClick = nullptr;;
-	QThread* clickThread = nullptr;;
+	QPointer<QPushButton> btnStart;
+	QPointer<QPushButton> btnStop;
+	QPointer<QPushButton> btnHotkey;
+
+	QPointer<QSpinBox> selectTimes;
+
+
+	QPointer<QRadioButton> selectTimesBtnRepeat;
+	QPointer<QRadioButton> selectTimesBtnRepeatUnStp;
+
+	QPointer<QComboBox> mouseButtonsSelect;
+	QPointer<QComboBox> mouseButtonsSelectClick;
+	
+
+	ClickLMR* mouseClick = nullptr;
+	QThread* clickThread = nullptr;
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
@@ -69,7 +82,7 @@ private:
 	QGroupBox* createRepeatClickGroup();
 	QGroupBox* createButtonsGroup();
 
-	void initializationInterval();
+	void initializationInterval(QPointer<QLineEdit>& newLine);
 	void initializationButtons();
 	void initializationMouseButtons();
 	void initializationTimesButtons();

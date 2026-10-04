@@ -26,9 +26,9 @@ void Functional::setupUi()
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
 
 
-    connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
-    connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
-    connect(buttons[2], &QPushButton::clicked, this, &Functional::buttonsClickHotkeySett);
+    connect(btnStart, &QPushButton::clicked, this, &Functional::buttonsClickStart);
+    connect(btnStop, &QPushButton::clicked, this, &Functional::buttonsClickStop);
+    connect(btnHotkey, &QPushButton::clicked, this, &Functional::buttonsClickHotkeySett);
 }
 
 QGroupBox* Functional::createClickIntervalGroup()
@@ -36,76 +36,78 @@ QGroupBox* Functional::createClickIntervalGroup()
     QGroupBox* group = new QGroupBox("Click Interval", this);
     QGridLayout* layout = new QGridLayout(group);
 
-    initializationInterval();
+    initializationInterval(linesH);
+    initializationInterval(linesM);
+    initializationInterval(linesS);
+    initializationInterval(linesMs);
+    linesMs->setText("100");
 
-    layout->addWidget(lines[0], 0, 0);
+    layout->addWidget(linesH, 0, 0);
     layout->addWidget(new QLabel("h", this), 0, 1);
-    layout->addWidget(lines[1], 0, 2);
+    layout->addWidget(linesM, 0, 2);
     layout->addWidget(new QLabel("m", this), 0, 3);
-    layout->addWidget(lines[2], 0, 4);
+    layout->addWidget(linesS, 0, 4);
     layout->addWidget(new QLabel("s", this), 0, 5);
-    layout->addWidget(lines[3], 0, 6);
+    layout->addWidget(linesMs, 0, 6);
     layout->addWidget(new QLabel("ms", this), 0, 7);
 
     return group;
 }
 
 
-void Functional::initializationInterval()
+void Functional::initializationInterval(QPointer<QLineEdit>& newLine)
 {
-
-    lines.resize(4);
-    for (int i = 0; i < lines.size();++i)
-    {
-        lines[i] = new QLineEdit(this);
-        lines[i]->setText("0");
-        lines[i]->setFocusPolicy(Qt::StrongFocus);
-        lines[i]->installEventFilter(this);
-        lines[i]->setAlignment(Qt::AlignRight);
-        lines[i]->setContextMenuPolicy(Qt::NoContextMenu);
-        lines[i]->setValidator(new QIntValidator(this));
-    }
-    lines[3]->setText("100");
+    newLine = new QLineEdit(this);
+    newLine->setText("0");
+    newLine->setFocusPolicy(Qt::StrongFocus);
+    newLine->installEventFilter(this);
+    newLine->setAlignment(Qt::AlignRight);
+    newLine->setContextMenuPolicy(Qt::NoContextMenu);
+    newLine->setValidator(new QIntValidator(this));
 }
 
 void Functional::initializationButtons()
 {
-    buttons.resize(4);
-    for (int i = 0; i < buttons.size();++i)
-    {
-        buttons[i] = new QPushButton(this);
-        buttons[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    }
 
-    buttons[0]->setText("Start (" + vkToString(vk) + ")");
-    buttons[1]->setText("Stop (" + vkToString(vk) + ")");
-    buttons[1]->setEnabled(false);
-    buttons[2]->setText("Hotkey setting");
+    btnStart = new QPushButton(this);
+    btnStop = new QPushButton(this);
+    btnHotkey = new QPushButton(this);
+
+    btnStart->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    btnStop->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    btnHotkey->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    
+
+    btnStart->setText("Start (" + vkToString(vk) + ")");
+    btnStop->setText("Stop (" + vkToString(vk) + ")");
+    btnStop->setEnabled(false);
+    btnHotkey->setText("Hotkey setting");
 }
 
 void Functional::initializationMouseButtons()
 {
-    mouseButtonsSelect.resize(2);
 
-    mouseButtonsSelect[0] = new QComboBox(this);
-    mouseButtonsSelect[1] = new QComboBox(this);
+    mouseButtonsSelect = new QComboBox(this);
+    mouseButtonsSelectClick = new QComboBox(this);
 
-    mouseButtonsSelect[0]->addItem("Left", "Left");
-    mouseButtonsSelect[0]->addItem("Middle", "Middle");
-    mouseButtonsSelect[0]->addItem("Right", "Right");
+    mouseButtonsSelect->addItem("Left", "Left");
+    mouseButtonsSelect->addItem("Middle", "Middle");
+    mouseButtonsSelect->addItem("Right", "Right");
 
-    mouseButtonsSelect[1]->addItem("Single", true);
-    mouseButtonsSelect[1]->addItem("Double", false);
+    mouseButtonsSelectClick->addItem("Single", true);
+    mouseButtonsSelectClick->addItem("Double", false);
 
    
 }
 
 void Functional::initializationTimesButtons()
 {
-    selectTimesBtn.resize(2);
-    selectTimesBtn[0] = new QRadioButton("Repeat", this);
-    selectTimesBtn[1] = new QRadioButton("Repeat until sopped", this);
-    selectTimesBtn[1]->setChecked(true);
+   
+    selectTimesBtnRepeat = new QRadioButton("Repeat", this);
+    selectTimesBtnRepeatUnStp = new QRadioButton("Repeat until stopped", this);
+    selectTimesBtnRepeatUnStp->setChecked(true);
+
     selectTimes = new QSpinBox(this);
     selectTimes->setMinimum(1);
     selectTimes->setValue(1);
@@ -117,10 +119,10 @@ void Functional::buttonsClickStart()
 { 
     if (clickThread && clickThread->isRunning()) return;// !!!!
 
-    clickSettings->ms_time = lines[3]->text().toULongLong() + (lines[2]->text().toLongLong() * 1000) + (lines[1]->text().toLongLong() * 60000) + (lines[0]->text().toLongLong() * 3600000);
-    clickSettings->selectedKey = mouseButtonsSelect[0]->currentData().toString();
-    clickSettings->controlClick = mouseButtonsSelect[1]->currentData().toBool(); 
-    if (selectTimesBtn[0]->isChecked()) clickSettings->time_click = selectTimes->value();
+    clickSettings->ms_time = linesMs->text().toULongLong() + (linesS->text().toLongLong() * 1000) + (linesM->text().toLongLong() * 60000) + (linesH->text().toLongLong() * 3600000);
+    clickSettings->selectedKey = mouseButtonsSelect->currentData().toString();
+    clickSettings->controlClick = mouseButtonsSelectClick->currentData().toBool();
+    if (selectTimesBtnRepeat->isChecked()) clickSettings->time_click = selectTimes->value();
     else clickSettings->time_click = -1;
  
     mouseClick = new ClickLMR();// !!!!
@@ -138,8 +140,8 @@ void Functional::buttonsClickStart()
     
 
     connect(clickThread, &QThread::finished, this, [this]() {
-        buttons[0]->setEnabled(true);
-        buttons[1]->setEnabled(false);
+        btnStart->setEnabled(true);
+        btnStop->setEnabled(false);
     });
 
     connect(clickThread, &QThread::destroyed, this, [this]() {
@@ -147,8 +149,8 @@ void Functional::buttonsClickStart()
         mouseClick = nullptr;
     });
 
-    buttons[0]->setEnabled(false);
-    buttons[1]->setEnabled(true);
+    btnStart->setEnabled(false);
+    btnStop->setEnabled(true);
 
     clickThread->start();// !!!!
 }
@@ -158,8 +160,8 @@ void Functional::buttonsClickStop()
    
     if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop(); // !!!!
  
-    buttons[0]->setEnabled(true);
-    buttons[1]->setEnabled(false);
+    btnStart->setEnabled(true);
+    btnStop->setEnabled(false);
 }
 
 
@@ -173,9 +175,9 @@ QGroupBox* Functional::createMouseButtonsSelectGroup()
     initializationMouseButtons();
 
     layout->addWidget(new QLabel("Mouse button:", this), 0, 0);
-    layout->addWidget(mouseButtonsSelect[0], 0, 1);
+    layout->addWidget(mouseButtonsSelect, 0, 1);
     layout->addWidget(new QLabel("Click type:", this), 1, 0);
-    layout->addWidget(mouseButtonsSelect[1], 1, 1);
+    layout->addWidget(mouseButtonsSelectClick, 1, 1);
 
     return group;
 }
@@ -187,10 +189,10 @@ QGroupBox* Functional::createRepeatClickGroup()
 
     initializationTimesButtons();
 
-    layout->addWidget(selectTimesBtn[0], 0, 0);
+    layout->addWidget(selectTimesBtnRepeat, 0, 0);
     layout->addWidget(selectTimes, 0, 1);
     layout->addWidget(new QLabel("times", this), 0, 2);
-    layout->addWidget(selectTimesBtn[1], 1, 0);
+    layout->addWidget(selectTimesBtnRepeatUnStp, 1, 0);
 
     return group;
 }
@@ -202,10 +204,10 @@ QGroupBox* Functional::createButtonsGroup()
 
     initializationButtons();
 
-    layout->addWidget(buttons[0], 0, 0);
-    layout->addWidget(buttons[1], 0, 1);
-    layout->addWidget(buttons[2], 1, 0);
-    layout->addWidget(buttons[3], 1, 1);
+    layout->addWidget(btnStart, 0, 0);
+    layout->addWidget(btnStop, 0, 1);
+    layout->addWidget(btnHotkey, 1, 0);
+    //layout->addWidget(buttons[3], 1, 1);
 
     return group;
 }
@@ -227,8 +229,8 @@ void Functional::buttonsClickHotkeySett()
         {
             vk = dialog->getNumHotkey();
             currFsModifier = dialog->getFsModifier();
-            buttons[0]->setText("Start (" + dialog->getNumHotkeyString() + ")");
-            buttons[1]->setText("Stop (" + dialog->getNumHotkeyString() + ")");
+            btnStart->setText("Start (" + dialog->getNumHotkeyString() + ")");
+            btnStop->setText("Stop (" + dialog->getNumHotkeyString() + ")");
         }
         else RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
     }
