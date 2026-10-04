@@ -7,6 +7,10 @@
 #include <QEventLoop>
 #include <windows.h>
 #include <QLineEdit>
+#include <QGroupBox>
+
+QString vkToString(UINT vk);
+
 
 class SettingHotkey : public QDialog
 {
@@ -16,23 +20,9 @@ public:
 	~SettingHotkey();
 
 	UINT getNumHotkey() { return saveVkCode; }
+	QString getNumHotkeyString() { return newHotKetString; }
 
-	QString vkToString(UINT vk)
-	{
-		static const std::unordered_map<UINT, QString> keyHot = {
-			{VK_F1, "F1"}, {VK_F2, "F2"}, {VK_F3, "F3"}, {VK_F4, "F4"},
-			{VK_F5, "F5"}, {VK_F6, "F6"}, {VK_F7, "F7"}, {VK_F8, "F8"},
-			{VK_F9, "F9"}, {VK_F10, "F10"}, {VK_F11, "F11"}, {VK_F12, "F12"},
-			{VK_SPACE, "Space"}, {VK_RETURN, "Enter"}, {VK_ESCAPE, "Esc"},
-			{VK_TAB, "Tab"}, {VK_SHIFT, "Shift"}, {VK_CONTROL, "Ctrl"}
-		};
-
-		if ((vk >= 'A' && vk <= 'Z') || (vk >= '0' && vk <= '9')) return QString(1, (char)vk);
-
-		auto it = keyHot.find(vk);
-		if (it != keyHot.end()) return it->second;
-		return "Unknown";
-	}
+	UINT getFsModifier();
 
 private slots:
 	
@@ -56,7 +46,7 @@ private:
 	static SettingHotkey* s_instance;
 	QEventLoop* m_loop = nullptr;
 
-	QString newTextVk = "";
+	QString newHotKetString = "";
 
 	void initializationButtons()
 	{
@@ -67,7 +57,31 @@ private:
 		outHotkey->setAlignment(Qt::AlignCenter);
 		outHotkey->setText("F6");
 		outHotkey->setReadOnly(true);
+		outHotkey->setFont(QFont("Segoe UI", 12, QFont::Bold));
+		buttSettings();
 	}
 
+	void buttSettings()
+	{
+		btnChangeHot->setFixedHeight(50);
+		btnChangeHot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+		
+		btnSave->setFixedHeight(40);
+		btnCancel->setFixedHeight(40);
+
+		btnSave->setFixedWidth(80);
+		btnCancel->setFixedWidth(80);
+
+		
+
+		btnSave->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		btnCancel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+		outHotkey->setFixedHeight(50);
+		outHotkey->setFixedWidth(130);
+		outHotkey->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	}
+
+	QGroupBox* createButtonsGroup();
 	
 };

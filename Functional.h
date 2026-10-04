@@ -60,8 +60,10 @@ private:
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
-	SettingHotkey* dialog = nullptr;;
+	SettingHotkey* dialog = nullptr;
 	UINT vk = VK_F6;
+	UINT currFsModifier = 0;
+
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();
 	QGroupBox* createRepeatClickGroup();

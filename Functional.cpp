@@ -5,7 +5,7 @@ Functional::Functional(QWidget* parent) : QWidget(parent)
     clickSettings = std::make_unique<SettingsClicker>();
     
     setupUi();
-    RegisterHotKey((HWND)this->winId(), 1001, 0, vk);
+    RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
 }
 
 void Functional::setupUi()
@@ -17,10 +17,14 @@ void Functional::setupUi()
     QGroupBox* repeatClickGroup = createRepeatClickGroup();
     QGroupBox* buttonsGroup = createButtonsGroup();
 
+    buttonsGroup->setFixedHeight(150);
+    buttonsGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     toolsContainer->addWidget(clickIntervalGroup, 0, 0, 1, 2);
     toolsContainer->addWidget(mouseButtonsSelectGroup, 1, 0, 1, 1);
     toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
     toolsContainer->addWidget(buttonsGroup, 2, 0, 1, 2);
+
 
     connect(buttons[0], &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(buttons[1], &QPushButton::clicked, this, &Functional::buttonsClickStop);
@@ -67,10 +71,14 @@ void Functional::initializationInterval()
 void Functional::initializationButtons()
 {
     buttons.resize(4);
-    for (int i = 0; i < buttons.size();++i) buttons[i] = new QPushButton(this);
+    for (int i = 0; i < buttons.size();++i)
+    {
+        buttons[i] = new QPushButton(this);
+        buttons[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    }
 
-    buttons[0]->setText("Start (" + dialog->vkToString(vk) + ")");
-    buttons[1]->setText("Stop (" + dialog->vkToString(vk) + ")");
+    buttons[0]->setText("Start (" + vkToString(vk) + ")");
+    buttons[1]->setText("Stop (" + vkToString(vk) + ")");
     buttons[1]->setEnabled(false);
     buttons[2]->setText("Hotkey setting");
 }
@@ -214,13 +222,15 @@ void Functional::buttonsClickHotkeySett()
 
     if (dialog->exec() == QDialog::Accepted)
     {
-        UnregisterHotKey((HWND)this->winId(), 1001);
-        if (RegisterHotKey((HWND)this->winId(), 1001, 0, dialog->getNumHotkey()))
+        UnregisterHotKey((HWND)this->winId(), 999);
+        if (RegisterHotKey((HWND)this->winId(), 999, dialog->getFsModifier(), dialog->getNumHotkey()))
         {
             vk = dialog->getNumHotkey();
-            buttons[0]->setText("Start (" + dialog->vkToString(vk) + ")");
-            buttons[1]->setText("Stop (" + dialog->vkToString(vk) + ")");
+            currFsModifier = dialog->getFsModifier();
+            buttons[0]->setText("Start (" + dialog->getNumHotkeyString() + ")");
+            buttons[1]->setText("Stop (" + dialog->getNumHotkeyString() + ")");
         }
+        else RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
     }
 
 }
@@ -232,7 +242,7 @@ bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* re
 
     MSG* msg = static_cast<MSG*>(message);
     if (msg->message == WM_HOTKEY) {
-        if (msg->wParam == 1001) { 
+        if (msg->wParam == 999) {
             toggleClick(); 
             return true;   
         }
@@ -243,7 +253,7 @@ bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* re
 
 Functional::~Functional()
 {
-    UnregisterHotKey((HWND)this->winId(), 1001);
+    UnregisterHotKey((HWND)this->winId(), 999);
 
     if (clickThread && clickThread->isRunning()) {// !!!!
         if (mouseClick)mouseClick->stop(); // !!!!
