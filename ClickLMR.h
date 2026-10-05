@@ -23,24 +23,23 @@ class ClickLMR : public QObject
 public:
 
 	ClickLMR(QObject* parent = nullptr);
-
-	void setSettings (const SettingsClicker& click);
 	void stop();
 
 	~ClickLMR();
 
 public slots:
 
-	void startClick() 
+	void startClick(const SettingsClicker& settings)
 	{
 		threadRun = true;
+		int timeClick = settings.time_click;
 
-		for (;threadRun && clickSettings->time_click != 0;)
+		for (;threadRun && timeClick != 0;)
 		{
-			click();
-			if (!clickSettings->controlClick) click();
+			click(settings.selectedKey);
+			if (!settings.controlClick) click(settings.selectedKey);
 
-			unsigned long long totalDelay = clickSettings->ms_time;
+			unsigned long long totalDelay = settings.ms_time;
 			const unsigned long long step = 10;
 
 			while (threadRun && totalDelay > 0)
@@ -52,7 +51,7 @@ public slots:
 			}
 
 			if (!threadRun)break;			
-			if (clickSettings->time_click > 0)clickSettings->time_click--;
+			if (timeClick > 0)timeClick--;
 		}
 
 		finished();
@@ -63,20 +62,19 @@ signals:
 	void finished();
 
 private:
-	std::unique_ptr<SettingsClicker> clickSettings;
 
 	std::atomic<bool> threadRun{ false };
 
-	std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName = {
+	void click(const QString& key)
+	{
+		static std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName = {
 		{"Left",   {MOUSEEVENTF_LEFTDOWN,   MOUSEEVENTF_LEFTUP}},
 		{"Middle", {MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_MIDDLEUP}},
 		{"Right",  {MOUSEEVENTF_RIGHTDOWN,  MOUSEEVENTF_RIGHTUP}}
-	};
+		};
 
-	void click()
-	{
 		INPUT input = { 0 };
-		const auto& event = mouseButtonsSelectName.at(clickSettings->selectedKey);
+		const auto& event = mouseButtonsSelectName.at(key);
 		input.type = INPUT_MOUSE;
 
 		input.mi.dwFlags = event[0];

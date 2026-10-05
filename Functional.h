@@ -42,7 +42,7 @@ private slots:
 	void buttonsClickStart();
 	void buttonsClickStop();
 	void toggleClick();
-
+	void infoClicked();
 	void buttonsClickHotkeySett();
 
 protected:
@@ -62,6 +62,7 @@ private:
 	QPointer<QPushButton> btnStart;
 	QPointer<QPushButton> btnStop;
 	QPointer<QPushButton> btnHotkey;
+	QPointer<QPushButton> btnMsgInfo;
 
 	QPointer<QSpinBox> selectTimes;
 

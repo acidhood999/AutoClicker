@@ -33,6 +33,8 @@ void Functional::setupUi()
     connect(btnStart, &QPushButton::clicked, this, &Functional::buttonsClickStart);
     connect(btnStop, &QPushButton::clicked, this, &Functional::buttonsClickStop);
     connect(btnHotkey, &QPushButton::clicked, this, &Functional::buttonsClickHotkeySett);
+
+    connect(btnMsgInfo, &QPushButton::clicked, this, &Functional::infoClicked);
 }
 
 QGroupBox* Functional::createClickIntervalGroup()
@@ -124,17 +126,28 @@ void Functional::initializationTimesButtons()
 void Functional::initializationButtonsOffset()
 {
     toolsOffsetH = new QHBoxLayout();
-
+    btnMsgInfo = new QPushButton("?",this);
     offsetRand = new QCheckBox(this);
+
     initializationInterval(lineOffset);
+
     lineOffset->setText("50");
     lineOffset->setFixedWidth(80);
-    toolsOffsetH->addWidget(offsetRand);
-    toolsOffsetH->addWidget(new QLabel("Random Offset", this));
+    btnMsgInfo->setFixedWidth(28);
+    offsetRand->setFixedWidth(28);
 
+    btnMsgInfo->setDefault(true);
+
+    toolsOffsetH->addWidget(btnMsgInfo);
+    toolsOffsetH->addWidget(new QLabel("Random Offset", this));
+    toolsOffsetH->addWidget(offsetRand);
     toolsOffsetH->addWidget(lineOffset);
     toolsOffsetH->addWidget(new QLabel("ms", this));
     toolsOffsetH->addStretch();
+
+
+
+    
 }
 
 
@@ -152,11 +165,14 @@ void Functional::buttonsClickStart()
     mouseClick = new ClickLMR();// !!!!
     clickThread = new QThread();// !!!!
 
-    mouseClick->setSettings(*clickSettings);
-
     mouseClick->moveToThread(clickThread);// !!!!
 
-    connect(clickThread, &QThread::started, mouseClick, &ClickLMR::startClick);// !!!!
+    SettingsClicker settingsCopy = *clickSettings;
+
+    connect(clickThread, &QThread::started, mouseClick, [this, settingsCopy]()
+    {
+        mouseClick->startClick(settingsCopy);
+    });// !!!!
 
     connect(mouseClick, &ClickLMR::finished, clickThread, &QThread::quit);// !!!!
     connect(mouseClick, &ClickLMR::finished, mouseClick, &QObject::deleteLater);// !!!!
@@ -238,6 +254,17 @@ void Functional::toggleClick()
 {
     if (clickThread && clickThread->isRunning()) buttonsClickStop();
     else buttonsClickStart();
+}
+
+void Functional::infoClicked()
+{
+    QString msg = "If interval is set to 100 milliseconds and Random offset is set to 50, then the actual value of interval is a random number in the range of 50 to 150.";
+    QMessageBox::information(
+        this,
+        "Info",
+        msg
+    );
+
 }
 
 void Functional::buttonsClickHotkeySett()
