@@ -144,10 +144,6 @@ void Functional::initializationButtonsOffset()
     toolsOffsetH->addWidget(lineOffset);
     toolsOffsetH->addWidget(new QLabel("ms", this));
     toolsOffsetH->addStretch();
-
-
-
-    
 }
 
 
@@ -161,6 +157,9 @@ void Functional::buttonsClickStart()
     clickSettings->controlClick = mouseButtonsSelectClick->currentData().toBool();
     if (selectTimesBtnRepeat->isChecked()) clickSettings->time_click = selectTimes->value();
     else clickSettings->time_click = -1;
+    if (offsetRand->isChecked())clickSettings->ms_offset = lineOffset->text().toULongLong();
+    else clickSettings->ms_offset = 0;
+   
  
     mouseClick = new ClickLMR();// !!!!
     clickThread = new QThread();// !!!!
@@ -244,7 +243,7 @@ QGroupBox* Functional::createButtonsGroup()
 
     layout->addWidget(btnStart, 0, 0);
     layout->addWidget(btnStop, 0, 1);
-    layout->addWidget(btnHotkey, 1, 0);
+    layout->addWidget(btnHotkey, 1, 0,1,2);
     //layout->addWidget(buttons[3], 1, 1);
 
     return group;

@@ -12,9 +12,11 @@
 struct SettingsClicker
 {
 	unsigned long long ms_time{}; // время
+	unsigned long long ms_offset{};
 	QString selectedKey{ "Left" }; // какая кнопка
 	bool controlClick{ true }; // дабл клик
 	int time_click{-1}; // сколько раз
+	
 }; 
 
 class ClickLMR : public QObject
@@ -41,6 +43,13 @@ public slots:
 
 			unsigned long long totalDelay = settings.ms_time;
 			const unsigned long long step = 10;
+
+			if (settings.ms_offset && settings.ms_offset > 0)
+			{
+				if (settings.ms_offset >= settings.ms_time) totalDelay = rand() % (settings.ms_offset + settings.ms_time) + 1;
+				else if (totalDelay == 0) totalDelay = rand() % settings.ms_offset + 1;
+				else totalDelay = rand() % (totalDelay) + settings.ms_offset+1;
+			}
 
 			while (threadRun && totalDelay > 0)
 			{
