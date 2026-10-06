@@ -7,13 +7,12 @@ AutoClicker::AutoClicker(QWidget *parent)
     settingWindow();
     fun = new Functional(this);
     setCentralWidget(fun);
-
 }
 
 void AutoClicker::settingWindow()
 {
     setWindowTitle("Auto Clicker");
-    setFixedSize(600,450);
+    setFixedSize(600,400);
 }
 
 AutoClicker::~AutoClicker() {}

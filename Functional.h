@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QHBoxLayout>
-
+#include <QListWidget>
 
 class Functional : public QWidget
 {
@@ -44,12 +44,13 @@ private slots:
 	void toggleClick();
 	void infoClicked();
 	void buttonsClickHotkeySett();
+	//void buttonsClickReset();
 
 protected:
 	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
 
 private:
-
+	QPointer<QHBoxLayout> mainLayout;
 	QPointer<QGridLayout> toolsContainer;
 	QPointer<QHBoxLayout> toolsOffsetH;
 
@@ -62,12 +63,16 @@ private:
 	QPointer<QPushButton> btnStart;
 	QPointer<QPushButton> btnStop;
 	QPointer<QPushButton> btnHotkey;
+	QPointer<QPushButton> btnReset;
+
 	QPointer<QPushButton> btnMsgInfo;
 
 	QPointer<QSpinBox> selectTimes;
 
 	QPointer<QRadioButton> selectTimesBtnRepeat;
 	QPointer<QRadioButton> selectTimesBtnRepeatUnStp;
+	QPointer<QRadioButton> selectCurrLocationCursor;
+	QPointer<QRadioButton> selectNodesCursor;
 
 	QPointer<QComboBox> mouseButtonsSelect;
 	QPointer<QComboBox> mouseButtonsSelectClick;
@@ -81,20 +86,27 @@ private:
 
 	std::unique_ptr<SettingsClicker> clickSettings;
 	
-	SettingHotkey* dialog = nullptr;
 	UINT vk = VK_F6;
 	UINT currFsModifier = 0;
+
+	QPointer<QListWidget> clickNodeList;
 
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();
 	QGroupBox* createRepeatClickGroup();
 	QGroupBox* createButtonsGroup();
+	QGroupBox* createModeSelection();
 
 	void initializationInterval(QPointer<QLineEdit>& newLine);
 	void initializationButtons();
 	void initializationMouseButtons();
 	void initializationTimesButtons();
 	void initializationButtonsOffset();
+	void initializationClickNodeList();
+	void initializationModeSelection();
+
+
+	void initializationConnect();
 
 	void setupUi();
 

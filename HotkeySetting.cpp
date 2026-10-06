@@ -47,6 +47,8 @@ UINT SettingHotkey::getFsModifier()
 	return 0;
 }
 
+UINT SettingHotkey::getNumHotkey() { return saveVkCode; }
+
 LRESULT SettingHotkey::RebindHotkey(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode >= 0 && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))

@@ -19,11 +19,10 @@ public:
 	SettingHotkey(QWidget* parent = nullptr);
 	~SettingHotkey();
 
-	UINT getNumHotkey() { return saveVkCode; }
-	QString getNumHotkeyString() { return newHotKetString; }
-
+	UINT getNumHotkey();
 	UINT getFsModifier();
 
+	QString getNumHotkeyString() { return newHotKetString; }
 private slots:
 	
 	void changeHotKey();
