@@ -16,7 +16,8 @@ void Functional::setupUi()
 
     initializationClickNodeList();
 
-    QGroupBox* clickNodeGroup = new QGroupBox("Nodes", this);
+    clickNodeGroup = new QGroupBox("Nodes", this);
+    clickNodeGroup->setFixedHeight(355);
     QVBoxLayout* nodeLayout = new QVBoxLayout(clickNodeGroup);
 
     //nodeLayout->setContentsMargins(0, 0, 0, 0);
@@ -24,6 +25,7 @@ void Functional::setupUi()
     //clickNodeList->setFrameShape(QFrame::NoFrame);
 
     nodeLayout->addWidget(clickNodeList);
+    clickNodeGroup->setVisible(false);
 
     QGroupBox* clickIntervalGroup = createClickIntervalGroup();
     QGroupBox* mouseButtonsSelectGroup = createMouseButtonsSelectGroup();
@@ -135,14 +137,19 @@ void Functional::initializationClickNodeList()
     clickNodeList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     clickNodeList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     clickNodeList->setFixedWidth(100);
+
+    clickNodeList->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
    
 }
 
 void Functional::initializationModeSelection()
 {
     selectCurrLocationCursor = new QRadioButton("Current location", this);
+    selectNodeСursor = new QRadioButton(this);
+    btnPosition = new QPushButton("Position",this);
     selectNodesCursor = new QRadioButton("Multi cursors", this);
     selectCurrLocationCursor->setChecked(true);
+    selectNodeСursor->setChecked(false);
     selectNodesCursor->setChecked(false);
 }
 
@@ -152,6 +159,13 @@ void Functional::initializationConnect()
     connect(btnStop, &QPushButton::clicked, this, &Functional::buttonsClickStop);
     connect(btnHotkey, &QPushButton::clicked, this, &Functional::buttonsClickHotkeySett);
     connect(btnMsgInfo, &QPushButton::clicked, this, &Functional::infoClicked);
+
+    connect(selectNodesCursor, &QRadioButton::toggled, this, [this](bool checked) {
+        if (clickNodeGroup) {
+            clickNodeGroup->setVisible(checked);
+            if (QWidget* topWindow = this->window()) topWindow->adjustSize();
+        }
+    });
 }
 
 
@@ -280,12 +294,29 @@ QGroupBox* Functional::createButtonsGroup()
 QGroupBox* Functional::createModeSelection()
 {
     initializationModeSelection();
+    initializationInterval(lineX);
+    initializationInterval(lineY);
+    lineX->setFixedWidth(45);
+    lineY->setFixedWidth(45);
+    btnPosition->setFixedWidth(60);
 
     QGroupBox* group = new QGroupBox("Cursor mode",this);
-    QGridLayout* layout = new QGridLayout(group);
+    QHBoxLayout* layoutH = new QHBoxLayout(group);
 
-    layout->addWidget(selectCurrLocationCursor, 0, 0);
-    layout->addWidget(selectNodesCursor, 0, 1);
+    layoutH->addWidget(selectCurrLocationCursor);
+
+    layoutH->addStretch(1);
+
+    layoutH->addWidget(selectNodeСursor);
+    layoutH->addWidget(btnPosition);
+    layoutH->addWidget(new QLabel("X", group));
+    layoutH->addWidget(lineX);
+    layoutH->addWidget(new QLabel("Y", group));
+    layoutH->addWidget(lineY);
+
+    layoutH->addStretch(1);
+
+    layoutH->addWidget(selectNodesCursor);
 
     return group;
 }
@@ -301,7 +332,6 @@ QGroupBox* Functional::createRepeatClickGroup()
     layout->addWidget(selectTimes, 0, 1);
     layout->addWidget(new QLabel("times", this), 0, 2);
     layout->addWidget(selectTimesBtnRepeatUnStp, 1, 0,1,2);
-
 
     return group;
 }

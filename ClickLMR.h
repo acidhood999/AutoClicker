@@ -76,22 +76,29 @@ private:
 
 	void click(const QString& key)
 	{
-		static std::unordered_map<QString, std::vector<int>> mouseButtonsSelectName = {
-		{"Left",   {MOUSEEVENTF_LEFTDOWN,   MOUSEEVENTF_LEFTUP}},
-		{"Middle", {MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_MIDDLEUP}},
-		{"Right",  {MOUSEEVENTF_RIGHTDOWN,  MOUSEEVENTF_RIGHTUP}}
-		};
+		DWORD downFlag = MOUSEEVENTF_LEFTDOWN;
+		DWORD upFlag = MOUSEEVENTF_LEFTUP;
+
+		if (key == "Right") 
+		{
+			downFlag = MOUSEEVENTF_RIGHTDOWN;
+			upFlag = MOUSEEVENTF_RIGHTUP;
+		}
+		else if (key == "Middle") 
+		{
+			downFlag = MOUSEEVENTF_MIDDLEDOWN;
+			upFlag = MOUSEEVENTF_MIDDLEUP;
+		}
 
 		INPUT input = { 0 };
-		const auto& event = mouseButtonsSelectName.at(key);
 		input.type = INPUT_MOUSE;
 
-		input.mi.dwFlags = event[0];
+		input.mi.dwFlags = downFlag;
 		SendInput(1, &input, sizeof(INPUT));
 
 		QThread::msleep(10);
 
-		input.mi.dwFlags = event[1];
+		input.mi.dwFlags = upFlag;
 		SendInput(1, &input, sizeof(INPUT));
 	}
 

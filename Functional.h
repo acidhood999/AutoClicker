@@ -59,11 +59,14 @@ private:
 	QPointer<QLineEdit> lineM;
 	QPointer<QLineEdit> lineH;
 
+	QPointer<QLineEdit> lineX;
+	QPointer<QLineEdit> lineY;
 
 	QPointer<QPushButton> btnStart;
 	QPointer<QPushButton> btnStop;
 	QPointer<QPushButton> btnHotkey;
 	QPointer<QPushButton> btnReset;
+	QPointer<QPushButton> btnPosition;
 
 	QPointer<QPushButton> btnMsgInfo;
 
@@ -73,11 +76,11 @@ private:
 	QPointer<QRadioButton> selectTimesBtnRepeatUnStp;
 	QPointer<QRadioButton> selectCurrLocationCursor;
 	QPointer<QRadioButton> selectNodesCursor;
+	QPointer<QRadioButton> selectNodeСursor;
 
 	QPointer<QComboBox> mouseButtonsSelect;
 	QPointer<QComboBox> mouseButtonsSelectClick;
 	
-
 	QPointer<QCheckBox> offsetRand;
 	QPointer<QLineEdit> lineOffset;
 
@@ -89,6 +92,7 @@ private:
 	UINT vk = VK_F6;
 	UINT currFsModifier = 0;
 
+	QPointer<QGroupBox> clickNodeGroup; 
 	QPointer<QListWidget> clickNodeList;
 
 	QGroupBox* createClickIntervalGroup();
