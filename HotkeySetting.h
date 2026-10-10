@@ -21,13 +21,10 @@ public:
 
 	UINT getNumHotkey();
 	UINT getFsModifier();
+	
+	QString getNumHotkeyString();
+	void setTextButton(const QString& newHotKeyString);
 
-	void setTextButton(const QString& newHotKeyString)
-	{
-		outHotkey->setText(newHotKeyString);
-	}
-
-	QString getNumHotkeyString() { return newHotKeyString; }
 private slots:
 	
 	void changeHotKey();

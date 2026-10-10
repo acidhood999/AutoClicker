@@ -155,6 +155,7 @@ void Functional::initializationModeSelection()
     selectNodesCursor = new QRadioButton("Multi cursors", this);
     selectCurrLocationCursor->setChecked(true);
     selectNodeСursor->setChecked(false);
+    btnPosition->setEnabled(false);
     selectNodesCursor->setChecked(false);
 }
 
@@ -166,19 +167,22 @@ void Functional::initializationConnect()
     connect(btnMsgInfo, &QPushButton::clicked, this, &Functional::infoClicked);
     connect(btnReset, &QPushButton::clicked, this, &Functional::buttonsClickReset);
 
+    connect(selectNodeСursor, &QRadioButton::toggled, this, [this](bool checked){ btnPosition->setEnabled(checked);});
     connect(selectNodesCursor, &QRadioButton::toggled, this, [this](bool checked) {
         if (clickNodeGroup) {
             clickNodeGroup->setVisible(checked);
             if (QWidget* topWindow = this->window()) topWindow->adjustSize();
         }
     });
+
+    connect(btnPosition, &QPushButton::clicked, this, &Functional::selectPixelPosition);
 }
-
-
 
 void Functional::buttonsClickStart()
 { 
     if (clickThread && clickThread->isRunning()) return;// !!!!
+
+    clickSettings->useCooedinates = selectNodeСursor->isChecked();
 
     clickSettings->ms_time = lineMs->text().toULongLong() + (lineS->text().toLongLong() * 1000) + (lineM->text().toLongLong() * 60000) + (lineH->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect->currentData().toString();
@@ -187,7 +191,13 @@ void Functional::buttonsClickStart()
     else clickSettings->time_click = -1;
     if (offsetRand->isChecked())clickSettings->ms_offset = lineOffset->text().toULongLong();
     else clickSettings->ms_offset = 0;
-   
+    if (clickSettings->useCooedinates)
+    {
+        clickSettings->x = lineX->text().toInt();
+        clickSettings->y = lineY->text().toInt();
+    }
+
+    
  
     mouseClick = new ClickLMR();// !!!!
     clickThread = new QThread();// !!!!
@@ -315,6 +325,20 @@ void Functional::buttonsClickReset()
         clickSettings->time_click = -1;
         clickSettings->ms_offset = 0;
     }
+}
+
+void Functional::selectPixelPosition()
+{
+    PositionPicker* picker = new PositionPicker();
+
+    connect(picker, &PositionPicker::positionSelected, this, [this](int x, int y)
+    {
+        lineX->setText(QString::number(x));
+        lineY->setText(QString::number(y));
+    });
+    connect(picker, &PositionPicker::destroyed, picker, &QObject::deleteLater);
+  
+    picker->show();
 }
 
 bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* result)

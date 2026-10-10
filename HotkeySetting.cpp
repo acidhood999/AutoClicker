@@ -49,6 +49,10 @@ UINT SettingHotkey::getFsModifier()
 
 UINT SettingHotkey::getNumHotkey() { return saveVkCode; }
 
+QString SettingHotkey::getNumHotkeyString() { return newHotKeyString; }
+
+void SettingHotkey::setTextButton(const QString& newHotKeyString) { outHotkey->setText(newHotKeyString); }
+
 LRESULT SettingHotkey::RebindHotkey(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode >= 0 && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))

@@ -28,6 +28,7 @@
 #include <QCheckBox>
 #include <QHBoxLayout>
 #include <QListWidget>
+#include <PositionPicker.h>
 
 class Functional : public QWidget
 {
@@ -44,7 +45,8 @@ private slots:
 	void toggleClick();
 	void infoClicked();
 	void buttonsClickHotkeySett();
-	void buttonsClickReset();
+	void buttonsClickReset(); 
+	void selectPixelPosition();
 
 protected:
 	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
