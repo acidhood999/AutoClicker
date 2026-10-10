@@ -17,13 +17,10 @@ void Functional::setupUi()
     initializationClickNodeList();
 
     clickNodeGroup = new QGroupBox("Nodes", this);
-    clickNodeGroup->setFixedHeight(355);
+    clickNodeGroup->setFixedHeight(357);
     QVBoxLayout* nodeLayout = new QVBoxLayout(clickNodeGroup);
 
-    //nodeLayout->setContentsMargins(0, 0, 0, 0);
-    //nodeLayout->setSpacing(0);                   
-    //clickNodeList->setFrameShape(QFrame::NoFrame);
-
+    nodeLayout->addLayout(addAndDel);
     nodeLayout->addWidget(clickNodeList);
     clickNodeGroup->setVisible(false);
 
@@ -49,6 +46,17 @@ void Functional::setupUi()
     mainLayout->addWidget(clickNodeGroup);
 
     initializationConnect();
+
+    clickNodeList->setStyleSheet(
+        "QListWidget::item {"
+        "   background-color: #ffffff;" 
+        "   color: #000000;"     
+        "   border: 1px solid #000000;"
+        "   border-radius: 8px;"
+        "   margin: 4px 6px;"    
+        "   padding: 10px;"
+        "}"
+    );
 }
 
 void Functional::initializationInterval(QPointer<QLineEdit>& newLine)
@@ -82,8 +90,6 @@ void Functional::initializationButtons()
 
 void Functional::initializationMouseButtons()
 {
-
-
     mouseButtonsSelect = new QComboBox(this);
     mouseButtonsSelectClick = new QComboBox(this);
 
@@ -93,13 +99,10 @@ void Functional::initializationMouseButtons()
 
     mouseButtonsSelectClick->addItem("Single", true);
     mouseButtonsSelectClick->addItem("Double", false);
-
-   
 }
 
 void Functional::initializationTimesButtons()
 {
-   
     selectTimesBtnRepeat = new QRadioButton("Repeat", this);
     selectTimes = new QSpinBox(this);
 
@@ -137,14 +140,24 @@ void Functional::initializationButtonsOffset()
 
 void Functional::initializationClickNodeList()
 {
+    addAndDel = new QHBoxLayout();
     clickNodeList = new QListWidget(this);
+    btnAddNode = new QPushButton("Add", this);
+    btnDelNode = new QPushButton("Del", this);
+
+    btnAddNode->setFixedSize(50, 20);
+    btnDelNode->setFixedSize(50, 20);
+
+    addAndDel->addWidget(btnAddNode);
+    addAndDel->addWidget(btnDelNode);
+
 
     clickNodeList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     clickNodeList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    clickNodeList->setFixedWidth(100);
+    clickNodeList->setFixedWidth(105);
 
     clickNodeList->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-   
+    clickNodeList->setFocusPolicy(Qt::NoFocus);
 }
 
 void Functional::initializationModeSelection()
@@ -176,6 +189,8 @@ void Functional::initializationConnect()
     });
 
     connect(btnPosition, &QPushButton::clicked, this, &Functional::selectPixelPosition);
+    connect(btnAddNode, &QPushButton::clicked, this, &Functional::addNodeButtonClicked);
+    connect(btnDelNode, &QPushButton::clicked, this, &Functional::delNodeButtonClicked);
 }
 
 void Functional::buttonsClickStart()
@@ -325,6 +340,15 @@ void Functional::buttonsClickReset()
         clickSettings->time_click = -1;
         clickSettings->ms_offset = 0;
     }
+
+    for (auto* marker : nodeMarkers)
+    {
+        marker->close();
+        marker->deleteLater();
+    }
+    nodeMarkers.clear();
+    if (clickNodeList) clickNodeList->clear();
+
 }
 
 void Functional::selectPixelPosition()
@@ -341,14 +365,53 @@ void Functional::selectPixelPosition()
     picker->show();
 }
 
+void Functional::addNodeButtonClicked()
+{
+    int initialX = width();
+    int initialY = height();
+
+    int nodeNumber = clickNodeList->count() + 1;
+
+    QString itemText = QString("Node %1\nX = %2\nY = %3").arg(nodeNumber).arg(initialX).arg(initialY);
+    QListWidgetItem* listItem = new QListWidgetItem(itemText, clickNodeList);
+
+    listItem->setTextAlignment(Qt::AlignCenter);
+    clickNodeList->addItem(listItem);
+
+    NodeMarker* marker = new NodeMarker(nodeNumber, initialX, initialY);
+
+    connect(marker, &NodeMarker::positionChanged, this, [listItem, nodeNumber](int num, int x, int y) {
+        if (num == nodeNumber) listItem->setText(QString("Node %1\nX = %2\nY = %3").arg(num).arg(x).arg(y));
+    });
+    marker->show();
+    nodeMarkers.append(marker);
+
+}
+
+void Functional::delNodeButtonClicked()
+{
+    if (nodeMarkers.isEmpty() || clickNodeList->count() == 0) return;
+
+    NodeMarker* markerDel = nodeMarkers.last();
+
+    markerDel->close();
+    markerDel->deleteLater();
+    nodeMarkers.pop_back();
+
+    QListWidgetItem* itemDel = clickNodeList->takeItem(clickNodeList->count() - 1);
+    delete itemDel;
+}
+
 bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* result)
 {
     Q_UNUSED(event);
     Q_UNUSED(result);
 
     MSG* msg = static_cast<MSG*>(message);
-    if (msg->message == WM_HOTKEY) {
-        if (msg->wParam == 999) {
+    if (msg->message == WM_HOTKEY) 
+    {
+        if (msg->wParam == 999) 
+        {
             toggleClick(); 
             return true;   
         }

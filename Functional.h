@@ -29,6 +29,8 @@
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <PositionPicker.h>
+#include <QList>
+#include "NodeMarker.h"
 
 class Functional : public QWidget
 {
@@ -47,6 +49,8 @@ private slots:
 	void buttonsClickHotkeySett();
 	void buttonsClickReset(); 
 	void selectPixelPosition();
+	void addNodeButtonClicked();
+	void delNodeButtonClicked();
 
 protected:
 	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
@@ -55,6 +59,7 @@ private:
 	QPointer<QHBoxLayout> mainLayout;
 	QPointer<QGridLayout> toolsContainer;
 	QPointer<QHBoxLayout> toolsOffsetH;
+	QPointer<QHBoxLayout> addAndDel;
 
 	QPointer<QLineEdit> lineMs;
 	QPointer<QLineEdit> lineS;
@@ -69,7 +74,8 @@ private:
 	QPointer<QPushButton> btnHotkey;
 	QPointer<QPushButton> btnReset;
 	QPointer<QPushButton> btnPosition;
-
+	QPointer<QPushButton> btnAddNode;
+	QPointer<QPushButton> btnDelNode;
 	QPointer<QPushButton> btnMsgInfo;
 
 	QPointer<QSpinBox> selectTimes;
@@ -97,6 +103,7 @@ private:
 
 	QPointer<QGroupBox> clickNodeGroup; 
 	QPointer<QListWidget> clickNodeList;
+	QList<NodeMarker*> nodeMarkers;
 
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();
