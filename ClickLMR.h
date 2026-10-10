@@ -11,12 +11,15 @@
 
 struct SettingsClicker
 {
-	unsigned long long ms_time{}; // время
-	unsigned long long ms_offset{};
+	unsigned long long ms_time{ 0 }; // время
+	unsigned long long ms_offset{ 0 };
 	QString selectedKey{ "Left" }; // какая кнопка
 	bool controlClick{ true }; // дабл клик
 	int time_click{-1}; // сколько раз
-	
+
+	bool useCooedinates{ false };
+	int x{ 0 };
+	int y{ 0 };
 }; 
 
 class ClickLMR : public QObject
@@ -33,13 +36,15 @@ public slots:
 
 	void startClick(const SettingsClicker& settings)
 	{
+		
+
 		threadRun = true;
 		int timeClick = settings.time_click;
 
 		for (;threadRun && timeClick != 0;)
 		{
-			click(settings.selectedKey);
-			if (!settings.controlClick) click(settings.selectedKey);
+			click(settings);
+			if (!settings.controlClick) click(settings);
 
 			unsigned long long totalDelay = settings.ms_time;
 			const unsigned long long step = 10;
@@ -74,17 +79,19 @@ private:
 
 	std::atomic<bool> threadRun{ false };
 
-	void click(const QString& key)
+	void click(const SettingsClicker& settings)
 	{
+		if (settings.useCooedinates) SetCursorPos(settings.x, settings.y);
+
 		DWORD downFlag = MOUSEEVENTF_LEFTDOWN;
 		DWORD upFlag = MOUSEEVENTF_LEFTUP;
 
-		if (key == "Right") 
+		if (settings.selectedKey == "Right")
 		{
 			downFlag = MOUSEEVENTF_RIGHTDOWN;
 			upFlag = MOUSEEVENTF_RIGHTUP;
 		}
-		else if (key == "Middle") 
+		else if (settings.selectedKey == "Middle")
 		{
 			downFlag = MOUSEEVENTF_MIDDLEDOWN;
 			upFlag = MOUSEEVENTF_MIDDLEUP;

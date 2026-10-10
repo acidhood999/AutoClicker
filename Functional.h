@@ -44,7 +44,7 @@ private slots:
 	void toggleClick();
 	void infoClicked();
 	void buttonsClickHotkeySett();
-	//void buttonsClickReset();
+	void buttonsClickReset();
 
 protected:
 	bool nativeEvent(const QByteArray &event, void* message, qintptr* result) override;
@@ -91,6 +91,7 @@ private:
 	
 	UINT vk = VK_F6;
 	UINT currFsModifier = 0;
+	QString saveName = "F6";
 
 	QPointer<QGroupBox> clickNodeGroup; 
 	QPointer<QListWidget> clickNodeList;

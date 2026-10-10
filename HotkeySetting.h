@@ -22,7 +22,12 @@ public:
 	UINT getNumHotkey();
 	UINT getFsModifier();
 
-	QString getNumHotkeyString() { return newHotKetString; }
+	void setTextButton(const QString& newHotKeyString)
+	{
+		outHotkey->setText(newHotKeyString);
+	}
+
+	QString getNumHotkeyString() { return newHotKeyString; }
 private slots:
 	
 	void changeHotKey();
@@ -45,7 +50,9 @@ private:
 	static SettingHotkey* s_instance;
 	QEventLoop* m_loop = nullptr;
 
-	QString newHotKetString = "";
+	QString newHotKeyString = "";
+
+	
 
 	void initializationButtons()
 	{

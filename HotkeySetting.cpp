@@ -110,7 +110,7 @@ void SettingHotkey::changeHotKey()
 	btnSave->setEnabled(false);
 	btnCancel->setEnabled(false);
 
-	newHotKetString = "";
+	newHotKeyString = "";
 	shiftPress = false;
 	ctrlPress = false;
 	altPress = false;
@@ -131,12 +131,12 @@ void SettingHotkey::changeHotKey()
 	}
 	
 
-	if (ctrlPress)  newHotKetString = "Ctrl + ";
-	if (altPress)   newHotKetString = "Alt + ";
-	if (shiftPress) newHotKetString = "Shift + ";
-	newHotKetString += vkToString(saveVkCode);
+	if (ctrlPress)  newHotKeyString = "Ctrl + ";
+	if (altPress)   newHotKeyString = "Alt + ";
+	if (shiftPress) newHotKeyString = "Shift + ";
+	newHotKeyString += vkToString(saveVkCode);
 
-	outHotkey->setText(newHotKetString);
+	outHotkey->setText(newHotKeyString);
 
 	btnChangeHot->setEnabled(true);
 	btnSave->setEnabled(true);
