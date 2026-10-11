@@ -20,6 +20,7 @@
 #include <QHBoxLayout>
 #include <QList>
 #include <QListWidget>
+#include <QSettings>
 #include <QDir>
 #include "include\PositionPicker.h"
 #include "include\NodeMarker.h"
@@ -34,6 +35,12 @@ public:
 	Functional(QWidget* parent);
 	void hideMarkersForTray();
 	void restoreMarkersFromTray();
+
+
+	void setMarkersVisible(bool visible);
+	QString getNodeItemText(int num, int x, int y) const;
+	QSettings getSettings() const;
+
 	~Functional();	
 
 private slots:

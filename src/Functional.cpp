@@ -4,11 +4,26 @@
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
     clickSettings = std::make_unique<SettingsClicker>();
-
     loadInfo();
-
     RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
 }
+
+void Functional::setMarkersVisible(bool visible)
+{
+    for (auto* marker : nodeMarkers) 
+    {
+        if (marker) 
+        {
+            if (visible) marker->show();
+            else marker->hide();
+        }
+    }
+}
+
+QString Functional::getNodeItemText(int num, int x, int y) const { return QString("Node %1\nX = %2\nY = %3").arg(num).arg(x).arg(y); }
+
+QSettings Functional::getSettings() const { return QSettings("acidhood999", "AutoClicker"); }
+
 
 void Functional::setupUi()
 {
@@ -42,7 +57,7 @@ void Functional::setupUi()
     toolsContainer->addWidget(repeatClickGroup, 1, 1, 1, 1);
     toolsContainer->addWidget(modeSelection, 2, 0, 1, 2);
     toolsContainer->addWidget(buttonsGroup, 3, 0, 1, 2);
-    
+
     mainLayout->addLayout(toolsContainer);
     mainLayout->addWidget(clickNodeGroup);
 
@@ -50,24 +65,22 @@ void Functional::setupUi()
 
     clickNodeList->setStyleSheet(
         "QListWidget::item {"
-        "   background-color: #ffffff;" 
-        "   color: #000000;"     
-        "   border: 1px solid #000000;"
-        "   border-radius: 8px;"
-        "   margin: 4px 6px;"    
-        "   padding: 10px;"
+        "    background-color: #ffffff;"
+        "    color: #000000;"
+        "    border: 1px solid #000000;"
+        "    border-radius: 8px;"
+        "    margin: 4px 6px;"
+        "    padding: 10px;"
         "}"
     );
 }
 
 void Functional::loadInfo()
 {
-    //
-    QSettings settings("acidhood999", "AutoClicker");
+    QSettings settings = getSettings();
     vk = settings.value("Hotkey/vk", VK_F6).toUInt();
     currFsModifier = settings.value("Hotkey/modifier", 0).toUInt();
     saveName = settings.value("Hotkey/name", "F6").toString();
-    //
 
     setupUi();
 
@@ -78,7 +91,7 @@ void Functional::loadInfo()
 
     int modeIndex = settings.value("Coordinates/mode", 0).toInt();
     if (modeIndex == 1) selectNodeСursor->setChecked(true);
-    else if (modeIndex == 2)  selectNodesCursor->setChecked(true);
+    else if (modeIndex == 2) selectNodesCursor->setChecked(true);
     else selectCurrLocationCursor->setChecked(true);
 
     int size = settings.beginReadArray("Nodes");
@@ -89,15 +102,14 @@ void Functional::loadInfo()
 
         int nodeNumber = clickNodeList->count() + 1;
 
-        QString itemText = QString("Node %1\nX = %2\nY = %3").arg(nodeNumber).arg(x).arg(y);
-        QListWidgetItem* listItem = new QListWidgetItem(itemText, clickNodeList);
+        QListWidgetItem* listItem = new QListWidgetItem(getNodeItemText(nodeNumber, x, y), clickNodeList);
         listItem->setTextAlignment(Qt::AlignCenter);
         clickNodeList->addItem(listItem);
 
         NodeMarker* marker = new NodeMarker(nodeNumber, x, y);
-        connect(marker, &NodeMarker::positionChanged, this, [listItem, nodeNumber](int num, int x, int y) {
-            if (num == nodeNumber) listItem->setText(QString("Node %1\nX = %2\nY = %3").arg(num).arg(x).arg(y));
-        });
+        connect(marker, &NodeMarker::positionChanged, this, [this, listItem, nodeNumber](int num, int x, int y) {
+            if (num == nodeNumber) listItem->setText(getNodeItemText(num, x, y));
+            });
 
         marker->hide();
         nodeMarkers.append(marker);
@@ -108,7 +120,7 @@ void Functional::loadInfo()
 
 void Functional::saveInfo()
 {
-    QSettings settings("acidhood999", "AutoClicker");
+    QSettings settings = getSettings();
 
     settings.setValue("Coordinates/x", lineX->text().toInt());
     settings.setValue("Coordinates/y", lineY->text().toInt());
@@ -141,11 +153,10 @@ void Functional::initializationInterval(QPointer<QLineEdit>& newLine)
 
 void Functional::initializationButtons()
 {
-
     btnStart = new QPushButton(this);
     btnStop = new QPushButton(this);
     btnReset = new QPushButton("Reset", this);
-    btnHotkey = new QPushButton("Hotkey setting",this);
+    btnHotkey = new QPushButton("Hotkey setting", this);
 
     btnStart->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     btnStop->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -189,7 +200,7 @@ void Functional::initializationButtonsOffset()
     initializationInterval(lineOffset);
 
     toolsOffsetH = new QHBoxLayout();
-    btnMsgInfo = new QPushButton("?",this);
+    btnMsgInfo = new QPushButton("?", this);
     offsetRand = new QCheckBox(this);
 
     lineOffset->setText("50");
@@ -220,7 +231,6 @@ void Functional::initializationClickNodeList()
     addAndDel->addWidget(btnAddNode);
     addAndDel->addWidget(btnDelNode);
 
-
     clickNodeList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     clickNodeList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     clickNodeList->setFixedWidth(105);
@@ -233,7 +243,7 @@ void Functional::initializationModeSelection()
 {
     selectCurrLocationCursor = new QRadioButton("Current location", this);
     selectNodeСursor = new QRadioButton(this);
-    btnPosition = new QPushButton("Position",this);
+    btnPosition = new QPushButton("Position", this);
     selectNodesCursor = new QRadioButton("Multi cursors", this);
     selectCurrLocationCursor->setChecked(true);
     selectNodeСursor->setChecked(false);
@@ -249,21 +259,14 @@ void Functional::initializationConnect()
     connect(btnMsgInfo, &QPushButton::clicked, this, &Functional::infoClicked);
     connect(btnReset, &QPushButton::clicked, this, &Functional::buttonsClickReset);
 
-    connect(selectNodeСursor, &QRadioButton::toggled, this, [this](bool checked){ btnPosition->setEnabled(checked);});
+    connect(selectNodeСursor, &QRadioButton::toggled, this, [this](bool checked) { btnPosition->setEnabled(checked);});
     connect(selectNodesCursor, &QRadioButton::toggled, this, [this](bool checked) {
         if (clickNodeGroup) {
             clickNodeGroup->setVisible(checked);
             if (QWidget* topWindow = this->window()) topWindow->adjustSize();
-            if (checked)
-            {
-                for (auto* marker : nodeMarkers) { marker->show(); }
-            }
-            else
-            {
-                for (auto* marker : nodeMarkers) { marker->hide(); }
-            }
+            setMarkersVisible(checked);
         }
-    });
+        });
 
     connect(btnPosition, &QPushButton::clicked, this, &Functional::selectPixelPosition);
     connect(btnAddNode, &QPushButton::clicked, this, &Functional::addNodeButtonClicked);
@@ -271,9 +274,8 @@ void Functional::initializationConnect()
 }
 
 void Functional::buttonsClickStart()
-{ 
-    if (clickThread && clickThread->isRunning()) return;// !!!!
-
+{
+    if (clickThread && clickThread->isRunning()) return;
 
     clickSettings->ms_time = lineMs->text().toULongLong() + (lineS->text().toLongLong() * 1000) + (lineM->text().toLongLong() * 60000) + (lineH->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect->currentData().toString();
@@ -282,7 +284,7 @@ void Functional::buttonsClickStart()
     if (selectTimesBtnRepeat->isChecked()) clickSettings->time_click = selectTimes->value();
     else clickSettings->time_click = -1;
 
-    if (offsetRand->isChecked())clickSettings->ms_offset = lineOffset->text().toULongLong();
+    if (offsetRand->isChecked()) clickSettings->ms_offset = lineOffset->text().toULongLong();
     else clickSettings->ms_offset = 0;
 
     if (selectNodeСursor->isChecked())
@@ -300,11 +302,10 @@ void Functional::buttonsClickStart()
         {
             if (marker)
             {
-                QPoint centerPos = marker->geometry().center();
-                clickSettings->nodePoints.append(centerPos);
-                marker->hide();
+                clickSettings->nodePoints.append(marker->geometry().center());
             }
         }
+        setMarkersVisible(false);
     }
     else
     {
@@ -312,46 +313,43 @@ void Functional::buttonsClickStart()
         clickSettings->nodePoints.clear();
     }
 
- 
-    mouseClick = new ClickLMR();// !!!!
-    clickThread = new QThread();// !!!!
+    mouseClick = new ClickLMR();
+    clickThread = new QThread();
 
-    mouseClick->moveToThread(clickThread);// !!!!
+    mouseClick->moveToThread(clickThread);
 
     SettingsClicker settingsCopy = *clickSettings;
 
     connect(clickThread, &QThread::started, mouseClick, [this, settingsCopy]()
-    {
-        mouseClick->startClick(settingsCopy);
-    });// !!!!
+        {
+            mouseClick->startClick(settingsCopy);
+        });
 
-    connect(mouseClick, &ClickLMR::finished, clickThread, &QThread::quit);// !!!!
-    connect(mouseClick, &ClickLMR::finished, mouseClick, &QObject::deleteLater);// !!!!
-    connect(clickThread, &QThread::finished, clickThread, &QObject::deleteLater);// !!!!
-    
+    connect(mouseClick, &ClickLMR::finished, clickThread, &QThread::quit);
+    connect(mouseClick, &ClickLMR::finished, mouseClick, &QObject::deleteLater);
+    connect(clickThread, &QThread::finished, clickThread, &QObject::deleteLater);
 
     connect(clickThread, &QThread::finished, this, [this]() {
         btnStart->setEnabled(true);
         btnStop->setEnabled(false);
-    });
+        });
 
     connect(clickThread, &QThread::destroyed, this, [this]() {
         clickThread = nullptr;
         mouseClick = nullptr;
-    });
+        });
 
     btnStart->setEnabled(false);
     btnStop->setEnabled(true);
 
-    clickThread->start();// !!!!
+    clickThread->start();
 }
 
-
 void Functional::buttonsClickStop()
-{  
-    if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop(); // !!!!
-    for (auto* marker : nodeMarkers) { if (marker) marker->show(); }
-        
+{
+    if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop();
+    setMarkersVisible(true);
+
     btnStart->setEnabled(true);
     btnStop->setEnabled(false);
 }
@@ -365,12 +363,7 @@ void Functional::toggleClick()
 void Functional::infoClicked()
 {
     QString msg = "If interval is set to 100 milliseconds and Random offset is set to 50, then the actual value of interval is a random number in the range of 50 to 150.";
-    QMessageBox::information(
-        this,
-        "Info",
-        msg
-    );
-
+    QMessageBox::information(this, "Info", msg);
 }
 
 void Functional::buttonsClickHotkeySett()
@@ -388,7 +381,7 @@ void Functional::buttonsClickHotkeySett()
             btnStart->setText("Start (" + dialog.getNumHotkeyString() + ")");
             btnStop->setText("Stop (" + dialog.getNumHotkeyString() + ")");
 
-            QSettings settings("acidhood999", "AutoClicker");
+            QSettings settings = getSettings();
             settings.setValue("Hotkey/vk", vk);
             settings.setValue("Hotkey/modifier", currFsModifier);
             settings.setValue("Hotkey/name", saveName);
@@ -399,8 +392,8 @@ void Functional::buttonsClickHotkeySett()
 
 void Functional::buttonsClickReset()
 {
-    if (clickThread && clickThread->isRunning())  buttonsClickStop();
-       
+    if (clickThread && clickThread->isRunning()) buttonsClickStop();
+
     lineMs->setText("0");
     lineS->setText("0");
     lineM->setText("0");
@@ -437,7 +430,7 @@ void Functional::buttonsClickReset()
     btnStart->setEnabled(true);
     btnStop->setEnabled(false);
 
-    if (clickSettings) 
+    if (clickSettings)
     {
         clickSettings->ms_time = 0;
         clickSettings->selectedKey = "Left";
@@ -454,7 +447,7 @@ void Functional::buttonsClickReset()
     nodeMarkers.clear();
     if (clickNodeList) clickNodeList->clear();
 
-    QSettings settings("acidhood999", "AutoClicker");
+    QSettings settings = getSettings();
     settings.remove("Nodes");
     settings.remove("Hotkey");
     settings.remove("Coordinates");
@@ -465,12 +458,12 @@ void Functional::selectPixelPosition()
     PositionPicker* picker = new PositionPicker();
 
     connect(picker, &PositionPicker::positionSelected, this, [this](int x, int y)
-    {
-        lineX->setText(QString::number(x));
-        lineY->setText(QString::number(y));
-    });
+        {
+            lineX->setText(QString::number(x));
+            lineY->setText(QString::number(y));
+        });
     connect(picker, &PositionPicker::destroyed, picker, &QObject::deleteLater);
-  
+
     picker->show();
 }
 
@@ -481,20 +474,17 @@ void Functional::addNodeButtonClicked()
 
     int nodeNumber = clickNodeList->count() + 1;
 
-    QString itemText = QString("Node %1\nX = %2\nY = %3").arg(nodeNumber).arg(initialX).arg(initialY);
-    QListWidgetItem* listItem = new QListWidgetItem(itemText, clickNodeList);
-
+    QListWidgetItem* listItem = new QListWidgetItem(getNodeItemText(nodeNumber, initialX, initialY), clickNodeList);
     listItem->setTextAlignment(Qt::AlignCenter);
     clickNodeList->addItem(listItem);
 
     NodeMarker* marker = new NodeMarker(nodeNumber, initialX, initialY);
 
-    connect(marker, &NodeMarker::positionChanged, this, [listItem, nodeNumber](int num, int x, int y) {
-        if (num == nodeNumber) listItem->setText(QString("Node %1\nX = %2\nY = %3").arg(num).arg(x).arg(y));
-    });
+    connect(marker, &NodeMarker::positionChanged, this, [this, listItem, nodeNumber](int num, int x, int y) {
+        if (num == nodeNumber) listItem->setText(getNodeItemText(num, x, y));
+        });
     marker->show();
     nodeMarkers.append(marker);
-
 }
 
 void Functional::delNodeButtonClicked()
@@ -517,12 +507,12 @@ bool Functional::nativeEvent(const QByteArray& event, void* message, qintptr* re
     Q_UNUSED(result);
 
     MSG* msg = static_cast<MSG*>(message);
-    if (msg->message == WM_HOTKEY) 
+    if (msg->message == WM_HOTKEY)
     {
-        if (msg->wParam == 999) 
+        if (msg->wParam == 999)
         {
-            toggleClick(); 
-            return true;   
+            toggleClick();
+            return true;
         }
     }
 
@@ -555,22 +545,18 @@ QGroupBox* Functional::createModeSelection()
     lineY->setFixedWidth(45);
     btnPosition->setFixedWidth(60);
 
-    QGroupBox* group = new QGroupBox("Cursor mode",this);
+    QGroupBox* group = new QGroupBox("Cursor mode", this);
     QHBoxLayout* layoutH = new QHBoxLayout(group);
 
     layoutH->addWidget(selectCurrLocationCursor);
-
     layoutH->addStretch(1);
-
     layoutH->addWidget(selectNodeСursor);
     layoutH->addWidget(btnPosition);
     layoutH->addWidget(new QLabel("X", group));
     layoutH->addWidget(lineX);
     layoutH->addWidget(new QLabel("Y", group));
     layoutH->addWidget(lineY);
-
     layoutH->addStretch(1);
-
     layoutH->addWidget(selectNodesCursor);
 
     return group;
@@ -586,7 +572,7 @@ QGroupBox* Functional::createRepeatClickGroup()
     layout->addWidget(selectTimesBtnRepeat, 0, 0);
     layout->addWidget(selectTimes, 0, 1);
     layout->addWidget(new QLabel("times", this), 0, 2);
-    layout->addWidget(selectTimesBtnRepeatUnStp, 1, 0,1,2);
+    layout->addWidget(selectTimesBtnRepeatUnStp, 1, 0, 1, 2);
 
     return group;
 }
@@ -613,7 +599,6 @@ QGroupBox* Functional::createClickIntervalGroup()
     initializationInterval(lineS);
     initializationInterval(lineMs);
     initializationButtonsOffset();
-
 
     QGroupBox* group = new QGroupBox("Click Interval", this);
     QGridLayout* layout = new QGridLayout(group);
@@ -644,27 +629,25 @@ void Functional::setAutoStart(bool enable)
 
 void Functional::hideMarkersForTray()
 {
-    for (auto* marker : nodeMarkers) { if (marker) marker->hide();}
+    setMarkersVisible(false);
 }
 
 void Functional::restoreMarkersFromTray()
 {
     if (selectNodesCursor && selectNodesCursor->isChecked()) {
-        for (auto* marker : nodeMarkers) { if (marker) marker->show(); }
+        setMarkersVisible(true);
     }
 }
 
 Functional::~Functional()
 {
     UnregisterHotKey((HWND)this->winId(), 999);
-    
+
     saveInfo();
 
-    if (clickThread && clickThread->isRunning()) {// !!!!
-        if (mouseClick)mouseClick->stop(); // !!!!
-        clickThread->quit(); // !!!!
-        clickThread->wait(); // !!!!
+    if (clickThread && clickThread->isRunning()) {
+        if (mouseClick) mouseClick->stop();
+        clickThread->quit();
+        clickThread->wait();
     }
 }
-
-
