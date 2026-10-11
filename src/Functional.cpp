@@ -1,5 +1,6 @@
 #include "include/Functional.h"
 #include <QSettings>
+#include <QScreen>
 
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
@@ -469,8 +470,13 @@ void Functional::selectPixelPosition()
 
 void Functional::addNodeButtonClicked()
 {
-    int initialX = width();
-    int initialY = height();
+    QScreen* screen = this->screen();
+
+    QRect screenGeometry;
+    if (screen) screenGeometry = screen->availableGeometry();
+    else screenGeometry = QRect(0, 0, 800, 600);
+    int initialX = screenGeometry.center().x();
+    int initialY = screenGeometry.center().y();
 
     int nodeNumber = clickNodeList->count() + 1;
 
