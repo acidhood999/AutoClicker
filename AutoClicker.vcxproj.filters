@@ -1,76 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>qml;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="include">
+      <UniqueIdentifier>{549671be-bbf2-45c1-b676-4b7256568479}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="src">
+      <UniqueIdentifier>{c51ef7de-3ea6-48bd-b0cc-b8ef9412629e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-    </Filter>
-    <Filter Include="Translation Files">
-      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
-      <Extensions>ts</Extensions>
+    <Filter Include="resources">
+      <UniqueIdentifier>{9d916e8d-38c9-49e3-8dec-f2ddd0b71892}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="AutoClicker.qrc">
-      <Filter>Resource Files</Filter>
+    <QtMoc Include="include\AutoClicker.h">
+      <Filter>include</Filter>
+    </QtMoc>
+    <QtMoc Include="include\ClickLMR.h">
+      <Filter>include</Filter>
+    </QtMoc>
+    <QtMoc Include="include\Functional.h">
+      <Filter>include</Filter>
+    </QtMoc>
+    <QtMoc Include="include\HotkeySetting.h">
+      <Filter>include</Filter>
+    </QtMoc>
+    <QtMoc Include="include\NodeMarker.h">
+      <Filter>include</Filter>
+    </QtMoc>
+    <QtMoc Include="include\PositionPicker.h">
+      <Filter>include</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="resources\AutoClicker.qrc">
+      <Filter>resources</Filter>
     </QtRcc>
-    <QtUic Include="AutoClicker.ui">
-      <Filter>Form Files</Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AutoClicker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClickLMR.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Functional.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HotkeySetting.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NodeMarker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PositionPicker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="resources\AutoClicker.ui">
+      <Filter>resources</Filter>
     </QtUic>
-    <QtMoc Include="AutoClicker.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClCompile Include="AutoClicker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Functional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClickLMR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HotkeySetting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PositionPicker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeMarker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Image Include="resources\mouse.ico">
+      <Filter>resources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Functional.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="ClickLMR.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="HotkeySetting.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="PositionPicker.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="NodeMarker.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
+    <ResourceCompile Include="resources\AutoClicker.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

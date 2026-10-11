@@ -1,4 +1,4 @@
-#include "NodeMarker.h"
+#include "include/NodeMarker.h"
 #include <QPainter>       
 #include <QMouseEvent>
 
@@ -59,6 +59,4 @@ void NodeMarker::mouseMoveEvent(QMouseEvent* event)
 		event->accept();
 	}
 }
-
-NodeMarker::~NodeMarker() {}
 

@@ -13,7 +13,7 @@ public:
 	void setNumber(int number);
 	int getNumber() const;
 
-	~NodeMarker();
+	~NodeMarker() = default;
 signals:
 	void positionChanged(int number, int x, int y);
 
@@ -25,5 +25,4 @@ protected:
 private:
 	int numberN;
 	QPoint dragPosition;
-
 };

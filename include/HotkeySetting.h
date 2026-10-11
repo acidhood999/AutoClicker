@@ -17,7 +17,7 @@ class SettingHotkey : public QDialog
 	Q_OBJECT
 public:
 	SettingHotkey(QWidget* parent = nullptr);
-	~SettingHotkey();
+	~SettingHotkey() = default;
 
 	UINT getNumHotkey();
 	UINT getFsModifier();

@@ -1,4 +1,4 @@
-#include "HotkeySetting.h"
+#include "include/HotkeySetting.h"
 
 HHOOK SettingHotkey::s_hHook = NULL;
 SettingHotkey* SettingHotkey::s_instance = nullptr;
@@ -145,11 +145,5 @@ void SettingHotkey::changeHotKey()
 	btnChangeHot->setEnabled(true);
 	btnSave->setEnabled(true);
 	btnCancel->setEnabled(true);
-}
-
-
-
-SettingHotkey::~SettingHotkey()
-{
 }
 

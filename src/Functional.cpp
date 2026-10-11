@@ -1,10 +1,11 @@
-#include "Functional.h"
+#include "include/Functional.h"
+#include <QSettings>
 
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
     clickSettings = std::make_unique<SettingsClicker>();
-    
-    setupUi();
+
+    loadInfo();
 
     RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
 }
@@ -59,6 +60,74 @@ void Functional::setupUi()
     );
 }
 
+void Functional::loadInfo()
+{
+    //
+    QSettings settings("acidhood999", "AutoClicker");
+    vk = settings.value("Hotkey/vk", VK_F6).toUInt();
+    currFsModifier = settings.value("Hotkey/modifier", 0).toUInt();
+    saveName = settings.value("Hotkey/name", "F6").toString();
+    //
+
+    setupUi();
+
+    int savedX = settings.value("Coordinates/x", 0).toInt();
+    int savedY = settings.value("Coordinates/y", 0).toInt();
+    if (lineX) lineX->setText(QString::number(savedX));
+    if (lineY) lineY->setText(QString::number(savedY));
+
+    int modeIndex = settings.value("Coordinates/mode", 0).toInt();
+    if (modeIndex == 1) selectNodeСursor->setChecked(true);
+    else if (modeIndex == 2)  selectNodesCursor->setChecked(true);
+    else selectCurrLocationCursor->setChecked(true);
+
+    int size = settings.beginReadArray("Nodes");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        int x = settings.value("x", 500).toInt();
+        int y = settings.value("y", 500).toInt();
+
+        int nodeNumber = clickNodeList->count() + 1;
+
+        QString itemText = QString("Node %1\nX = %2\nY = %3").arg(nodeNumber).arg(x).arg(y);
+        QListWidgetItem* listItem = new QListWidgetItem(itemText, clickNodeList);
+        listItem->setTextAlignment(Qt::AlignCenter);
+        clickNodeList->addItem(listItem);
+
+        NodeMarker* marker = new NodeMarker(nodeNumber, x, y);
+        connect(marker, &NodeMarker::positionChanged, this, [listItem, nodeNumber](int num, int x, int y) {
+            if (num == nodeNumber) listItem->setText(QString("Node %1\nX = %2\nY = %3").arg(num).arg(x).arg(y));
+        });
+
+        marker->hide();
+        nodeMarkers.append(marker);
+    }
+    settings.endArray();
+    setAutoStart(true);
+}
+
+void Functional::saveInfo()
+{
+    QSettings settings("acidhood999", "AutoClicker");
+
+    settings.setValue("Coordinates/x", lineX->text().toInt());
+    settings.setValue("Coordinates/y", lineY->text().toInt());
+
+    int modeIndex = 0;
+    if (selectNodeСursor->isChecked()) modeIndex = 1;
+    else if (selectNodesCursor->isChecked()) modeIndex = 2;
+    settings.setValue("Coordinates/mode", modeIndex);
+
+    settings.beginWriteArray("Nodes");
+    for (int i = 0; i < nodeMarkers.size(); ++i) {
+        settings.setArrayIndex(i);
+        QPoint center = nodeMarkers[i]->geometry().center();
+        settings.setValue("x", center.x());
+        settings.setValue("y", center.y());
+    }
+    settings.endArray();
+}
+
 void Functional::initializationInterval(QPointer<QLineEdit>& newLine)
 {
     newLine = new QLineEdit(this);
@@ -83,8 +152,8 @@ void Functional::initializationButtons()
     btnReset->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     btnHotkey->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    btnStart->setText("Start (" + vkToString(vk) + ")");
-    btnStop->setText("Stop (" + vkToString(vk) + ")");
+    btnStart->setText("Start (" + saveName + ")");
+    btnStop->setText("Stop (" + saveName + ")");
     btnStop->setEnabled(false);
 }
 
@@ -185,6 +254,14 @@ void Functional::initializationConnect()
         if (clickNodeGroup) {
             clickNodeGroup->setVisible(checked);
             if (QWidget* topWindow = this->window()) topWindow->adjustSize();
+            if (checked)
+            {
+                for (auto* marker : nodeMarkers) { marker->show(); }
+            }
+            else
+            {
+                for (auto* marker : nodeMarkers) { marker->hide(); }
+            }
         }
     });
 
@@ -197,22 +274,44 @@ void Functional::buttonsClickStart()
 { 
     if (clickThread && clickThread->isRunning()) return;// !!!!
 
-    clickSettings->useCooedinates = selectNodeСursor->isChecked();
 
     clickSettings->ms_time = lineMs->text().toULongLong() + (lineS->text().toLongLong() * 1000) + (lineM->text().toLongLong() * 60000) + (lineH->text().toLongLong() * 3600000);
     clickSettings->selectedKey = mouseButtonsSelect->currentData().toString();
     clickSettings->controlClick = mouseButtonsSelectClick->currentData().toBool();
+
     if (selectTimesBtnRepeat->isChecked()) clickSettings->time_click = selectTimes->value();
     else clickSettings->time_click = -1;
+
     if (offsetRand->isChecked())clickSettings->ms_offset = lineOffset->text().toULongLong();
     else clickSettings->ms_offset = 0;
-    if (clickSettings->useCooedinates)
+
+    if (selectNodeСursor->isChecked())
     {
+        clickSettings->useCooedinates = true;
         clickSettings->x = lineX->text().toInt();
         clickSettings->y = lineY->text().toInt();
+        clickSettings->nodePoints.clear();
+    }
+    else if (selectNodesCursor->isChecked())
+    {
+        clickSettings->useCooedinates = true;
+        clickSettings->nodePoints.clear();
+        for (auto* marker : nodeMarkers)
+        {
+            if (marker)
+            {
+                QPoint centerPos = marker->geometry().center();
+                clickSettings->nodePoints.append(centerPos);
+                marker->hide();
+            }
+        }
+    }
+    else
+    {
+        clickSettings->useCooedinates = false;
+        clickSettings->nodePoints.clear();
     }
 
-    
  
     mouseClick = new ClickLMR();// !!!!
     clickThread = new QThread();// !!!!
@@ -251,6 +350,8 @@ void Functional::buttonsClickStart()
 void Functional::buttonsClickStop()
 {  
     if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop(); // !!!!
+    for (auto* marker : nodeMarkers) { if (marker) marker->show(); }
+        
     btnStart->setEnabled(true);
     btnStop->setEnabled(false);
 }
@@ -283,13 +384,17 @@ void Functional::buttonsClickHotkeySett()
         {
             vk = dialog.getNumHotkey();
             currFsModifier = dialog.getFsModifier();
+            saveName = dialog.getNumHotkeyString();
             btnStart->setText("Start (" + dialog.getNumHotkeyString() + ")");
             btnStop->setText("Stop (" + dialog.getNumHotkeyString() + ")");
-            saveName = dialog.getNumHotkeyString();
+
+            QSettings settings("acidhood999", "AutoClicker");
+            settings.setValue("Hotkey/vk", vk);
+            settings.setValue("Hotkey/modifier", currFsModifier);
+            settings.setValue("Hotkey/name", saveName);
         }
         else RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
     }
-
 }
 
 void Functional::buttonsClickReset()
@@ -349,6 +454,10 @@ void Functional::buttonsClickReset()
     nodeMarkers.clear();
     if (clickNodeList) clickNodeList->clear();
 
+    QSettings settings("acidhood999", "AutoClicker");
+    settings.remove("Nodes");
+    settings.remove("Hotkey");
+    settings.remove("Coordinates");
 }
 
 void Functional::selectPixelPosition()
@@ -523,9 +632,33 @@ QGroupBox* Functional::createClickIntervalGroup()
     return group;
 }
 
+void Functional::setAutoStart(bool enable)
+{
+    QSettings regSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+    QString appPath = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
+    QString appName = "AutoClicker";
+
+    if (enable) regSettings.setValue(appName, "\"" + appPath + "\" --tray");
+    else regSettings.remove(appName);
+}
+
+void Functional::hideMarkersForTray()
+{
+    for (auto* marker : nodeMarkers) { if (marker) marker->hide();}
+}
+
+void Functional::restoreMarkersFromTray()
+{
+    if (selectNodesCursor && selectNodesCursor->isChecked()) {
+        for (auto* marker : nodeMarkers) { if (marker) marker->show(); }
+    }
+}
+
 Functional::~Functional()
 {
     UnregisterHotKey((HWND)this->winId(), 999);
+    
+    saveInfo();
 
     if (clickThread && clickThread->isRunning()) {// !!!!
         if (mouseClick)mouseClick->stop(); // !!!!

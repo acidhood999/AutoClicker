@@ -1,4 +1,4 @@
-#include "PositionPicker.h"
+#include "include/PositionPicker.h"
 #include <QMouseEvent>
 #include <QGuiApplication>
 #include <QScreen>

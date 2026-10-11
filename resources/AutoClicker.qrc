@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/AutoClicker">
+        <file>mouse.ico</file>
+    </qresource>
+</RCC>

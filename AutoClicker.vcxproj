@@ -10,6 +10,45 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\AutoClicker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\ClickLMR.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\Functional.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\HotkeySetting.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\NodeMarker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\PositionPicker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="resources\AutoClicker.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AutoClicker.cpp" />
+    <ClCompile Include="src\ClickLMR.cpp" />
+    <ClCompile Include="src\Functional.cpp" />
+    <ClCompile Include="src\HotkeySetting.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NodeMarker.cpp" />
+    <ClCompile Include="src\PositionPicker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="resources\AutoClicker.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\mouse.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\AutoClicker.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EB634E32-204E-4742-94BB-CD9377AAF277}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
@@ -91,31 +130,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="NodeMarker.cpp" />
-    <ClCompile Include="PositionPicker.cpp" />
-    <QtRcc Include="AutoClicker.qrc" />
-    <QtUic Include="AutoClicker.ui" />
-    <QtMoc Include="AutoClicker.h" />
-    <ClCompile Include="AutoClicker.cpp" />
-    <ClCompile Include="ClickLMR.cpp" />
-    <QtMoc Include="ClickLMR.h" />
-    <ClCompile Include="Functional.cpp" />
-    <ClCompile Include="HotkeySetting.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="Functional.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="HotkeySetting.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="PositionPicker.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="NodeMarker.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

@@ -8,7 +8,7 @@ class PositionPicker : public QWidget
 	Q_OBJECT
 public:
 	PositionPicker(QWidget* parent = nullptr);
-
+	~PositionPicker() = default;
 signals:
 	void positionSelected(int x, int y);
 protected:

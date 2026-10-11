@@ -7,30 +7,24 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QVector>
 #include <QIntValidator>
 #include <windows.h>								
 #include <stdio.h>	 
-#include <QtConcurrent>
-#include <atomic>
-#include <QFuture>
 #include <QComboBox>
-#include <unordered_map>
-#include <vector>
 #include <QShortcut>
 #include <QSpinBox>
 #include <QRadioButton>
-#include <ClickLMR.h>
-#include <memory>
 #include <QThread>
-#include "HotkeySetting.h"
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QHBoxLayout>
-#include <QListWidget>
-#include <PositionPicker.h>
 #include <QList>
-#include "NodeMarker.h"
+#include <QListWidget>
+#include <QDir>
+#include "include\PositionPicker.h"
+#include "include\NodeMarker.h"
+#include "include\ClickLMR.h"
+#include "include\HotkeySetting.h"
 
 class Functional : public QWidget
 {
@@ -38,6 +32,8 @@ class Functional : public QWidget
 public:
 
 	Functional(QWidget* parent);
+	void hideMarkersForTray();
+	void restoreMarkersFromTray();
 	~Functional();	
 
 private slots:
@@ -119,12 +115,14 @@ private:
 	void initializationClickNodeList();
 	void initializationModeSelection();
 
-
 	void initializationConnect();
 
 	void setupUi();
 
+	void loadInfo();
+	void saveInfo();
 
-	
+	void setAutoStart(bool enable);
+
 
 };
