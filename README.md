@@ -2,7 +2,7 @@
 
 A multi-threaded auto-clicker for Windows, developed using **C++**, **Qt Widgets**, and the low-level **Win32 API**. The program is designed to automate clicking tasks, featuring support for multiple points (nodes), global hotkeys, and smooth operation without interface freezing.
 
-![Auto Clicker Interface](images/1.jpg)
+![Auto Clicker Interface](images/1.jpg)(images/2.jpg)
 ---
 
 ## Key Features
