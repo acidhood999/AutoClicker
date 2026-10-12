@@ -108,6 +108,9 @@ private:
 	QPointer<QListWidget> clickNodeList;
 	QList<NodeMarker*> nodeMarkers;
 
+	QPointer <QScreen> currentScreen;
+	QRect screenGeometry;
+
 	QGroupBox* createClickIntervalGroup();
 	QGroupBox* createMouseButtonsSelectGroup();
 	QGroupBox* createRepeatClickGroup();
@@ -121,7 +124,7 @@ private:
 	void initializationButtonsOffset();
 	void initializationClickNodeList();
 	void initializationModeSelection();
-
+	void initializationScreenCoor();
 	void initializationConnect();
 
 	void setupUi();

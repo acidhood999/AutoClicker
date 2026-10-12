@@ -5,6 +5,7 @@
 Functional::Functional(QWidget* parent) : QWidget(parent)
 {
     clickSettings = std::make_unique<SettingsClicker>();
+    initializationScreenCoor();
     loadInfo();
     RegisterHotKey((HWND)this->winId(), 999, currFsModifier, vk);
 }
@@ -95,11 +96,13 @@ void Functional::loadInfo()
     else if (modeIndex == 2) selectNodesCursor->setChecked(true);
     else selectCurrLocationCursor->setChecked(true);
 
+   
     int size = settings.beginReadArray("Nodes");
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i)
+    {
         settings.setArrayIndex(i);
-        int x = settings.value("x", 500).toInt();
-        int y = settings.value("y", 500).toInt();
+        int x = settings.value("x", screenGeometry.center().x()).toInt();
+        int y = settings.value("y", screenGeometry.center().y()).toInt();
 
         int nodeNumber = clickNodeList->count() + 1;
 
@@ -252,6 +255,13 @@ void Functional::initializationModeSelection()
     selectNodesCursor->setChecked(false);
 }
 
+void Functional::initializationScreenCoor()
+{
+    currentScreen = this->screen();
+    if (currentScreen) screenGeometry = currentScreen->availableGeometry();
+    else screenGeometry = QRect(0, 0, 800, 600);
+}
+
 void Functional::initializationConnect()
 {
     connect(btnStart, &QPushButton::clicked, this, &Functional::buttonsClickStart);
@@ -301,10 +311,7 @@ void Functional::buttonsClickStart()
         clickSettings->nodePoints.clear();
         for (auto* marker : nodeMarkers)
         {
-            if (marker)
-            {
-                clickSettings->nodePoints.append(marker->geometry().center());
-            }
+            if (marker) clickSettings->nodePoints.append(marker->geometry().center());
         }
         setMarkersVisible(false);
     }
@@ -322,9 +329,9 @@ void Functional::buttonsClickStart()
     SettingsClicker settingsCopy = *clickSettings;
 
     connect(clickThread, &QThread::started, mouseClick, [this, settingsCopy]()
-        {
-            mouseClick->startClick(settingsCopy);
-        });
+    {
+        mouseClick->startClick(settingsCopy);
+    });
 
     connect(mouseClick, &ClickLMR::finished, clickThread, &QThread::quit);
     connect(mouseClick, &ClickLMR::finished, mouseClick, &QObject::deleteLater);
@@ -333,12 +340,12 @@ void Functional::buttonsClickStart()
     connect(clickThread, &QThread::finished, this, [this]() {
         btnStart->setEnabled(true);
         btnStop->setEnabled(false);
-        });
+    });
 
     connect(clickThread, &QThread::destroyed, this, [this]() {
         clickThread = nullptr;
         mouseClick = nullptr;
-        });
+    });
 
     btnStart->setEnabled(false);
     btnStop->setEnabled(true);
@@ -459,10 +466,10 @@ void Functional::selectPixelPosition()
     PositionPicker* picker = new PositionPicker();
 
     connect(picker, &PositionPicker::positionSelected, this, [this](int x, int y)
-        {
-            lineX->setText(QString::number(x));
-            lineY->setText(QString::number(y));
-        });
+    {
+        lineX->setText(QString::number(x));
+        lineY->setText(QString::number(y));
+    });
     connect(picker, &PositionPicker::destroyed, picker, &QObject::deleteLater);
 
     picker->show();
@@ -470,11 +477,6 @@ void Functional::selectPixelPosition()
 
 void Functional::addNodeButtonClicked()
 {
-    QScreen* screen = this->screen();
-
-    QRect screenGeometry;
-    if (screen) screenGeometry = screen->availableGeometry();
-    else screenGeometry = QRect(0, 0, 800, 600);
     int initialX = screenGeometry.center().x();
     int initialY = screenGeometry.center().y();
 
@@ -488,8 +490,9 @@ void Functional::addNodeButtonClicked()
 
     connect(marker, &NodeMarker::positionChanged, this, [this, listItem, nodeNumber](int num, int x, int y) {
         if (num == nodeNumber) listItem->setText(getNodeItemText(num, x, y));
-        });
+    });
     marker->show();
+
     nodeMarkers.append(marker);
 }
 
@@ -633,17 +636,9 @@ void Functional::setAutoStart(bool enable)
     else regSettings.remove(appName);
 }
 
-void Functional::hideMarkersForTray()
-{
-    setMarkersVisible(false);
-}
+void Functional::hideMarkersForTray() { setMarkersVisible(false); }
 
-void Functional::restoreMarkersFromTray()
-{
-    if (selectNodesCursor && selectNodesCursor->isChecked()) {
-        setMarkersVisible(true);
-    }
-}
+void Functional::restoreMarkersFromTray() { if (selectNodesCursor && selectNodesCursor->isChecked()) setMarkersVisible(true); }
 
 Functional::~Functional()
 {
@@ -651,7 +646,8 @@ Functional::~Functional()
 
     saveInfo();
 
-    if (clickThread && clickThread->isRunning()) {
+    if (clickThread && clickThread->isRunning()) 
+    {
         if (mouseClick) mouseClick->stop();
         clickThread->quit();
         clickThread->wait();

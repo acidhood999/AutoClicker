@@ -11,7 +11,6 @@
 
 QString vkToString(UINT vk);
 
-
 class SettingHotkey : public QDialog
 {
 	Q_OBJECT
@@ -26,9 +25,7 @@ public:
 	void setTextButton(const QString& newHotKeyString);
 
 private slots:
-	
 	void changeHotKey();
-
 
 private:
 	QPointer<QPushButton> btnChangeHot;
@@ -48,8 +45,6 @@ private:
 	QEventLoop* m_loop = nullptr;
 
 	QString newHotKeyString = "";
-
-	
 
 	void initializationButtons()
 	{
@@ -75,7 +70,6 @@ private:
 		btnSave->setFixedWidth(80);
 		btnCancel->setFixedWidth(80);
 
-		
 
 		btnSave->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 		btnCancel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -86,5 +80,4 @@ private:
 	}
 
 	QGroupBox* createButtonsGroup();
-	
 };
