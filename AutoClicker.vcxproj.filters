@@ -10,6 +10,9 @@
     <Filter Include="resources">
       <UniqueIdentifier>{9d916e8d-38c9-49e3-8dec-f2ddd0b71892}</UniqueIdentifier>
     </Filter>
+    <Filter Include="images">
+      <UniqueIdentifier>{99c866bd-a20c-47fa-b3ed-20777e164d0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\AutoClicker.h">
