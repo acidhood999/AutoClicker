@@ -71,10 +71,10 @@
     <Image Include="resources\mouse.ico">
       <Filter>resources</Filter>
     </Image>
-    <Image Include="images\photo_2026-10-12_03-44-59.jpg">
+    <Image Include="images\1.jpg">
       <Filter>images</Filter>
     </Image>
-    <Image Include="images\photo_2026-10-12_03-45-23.jpg">
+    <Image Include="images\2.jpg">
       <Filter>images</Filter>
     </Image>
   </ItemGroup>
