@@ -113,12 +113,13 @@ void Functional::loadInfo()
         NodeMarker* marker = new NodeMarker(nodeNumber, x, y);
         connect(marker, &NodeMarker::positionChanged, this, [this, listItem, nodeNumber](int num, int x, int y) {
             if (num == nodeNumber) listItem->setText(getNodeItemText(num, x, y));
-            });
+        });
 
         marker->hide();
         nodeMarkers.append(marker);
     }
     settings.endArray();
+    if (selectNodesCursor && selectNodesCursor->isChecked()) setMarkersVisible(true);
     setAutoStart(true);
 }
 
