@@ -6,6 +6,7 @@ A multi-threaded auto-clicker for Windows, developed using **C++**, **Qt Widgets
   <img src="images/1.jpg" alt="Screenshot 2" width="45%" style="margin-right: 10px; vertical-align: middle;">
   <img src="images/2.jpg" alt="Auto Clicker Interface" width="45%" style="vertical-align: middle;">
 </p>
+
 ---
 
 ## Key Features
