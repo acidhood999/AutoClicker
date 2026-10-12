@@ -44,6 +44,8 @@
     <QtUic Include="resources\AutoClicker.ui" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="images\photo_2026-10-12_03-44-59.jpg" />
+    <Image Include="images\photo_2026-10-12_03-45-23.jpg" />
     <Image Include="resources\mouse.ico" />
   </ItemGroup>
   <ItemGroup>
