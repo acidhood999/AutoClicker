@@ -16,7 +16,9 @@ A multi-threaded auto-clicker for Windows, developed using **C++**, **Qt Widgets
 * **Global Hotkeys:** Control the clicker (start/stop) using system-wide hotkeys via the Win32 API (`RegisterHotKey`), alongside an advanced key interceptor based on low-level hooks (`SetWindowsHookEx`).
 * **Direct Windows API Integration:** Uses high-performance functions like `SendInput` and `SetCursorPos`, allowing the clicker to function correctly over any third-party applications or games.
 * **Automatic Settings Persistence:** All parameters, delays, and the array of active nodes are saved to the Windows Registry using `QSettings`.
-* **System Tray Support:** Ability to minimize the application to the system tray (`QSystemTrayIcon`) for background operation. ---
+* **System Tray Support:** Ability to minimize the application to the system tray (`QSystemTrayIcon`) for background operation.
+
+---
 
 ## Technology Stack
 
