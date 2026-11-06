@@ -48,3 +48,5 @@ A multi-threaded auto-clicker for Windows, developed using **C++**, **Qt Widgets
 2. Clone the repository:
 ```bash
 git clone [https://github.com/acidhood999/AutoClicker.git](https://github.com/acidhood999/AutoClicker.git)
+
+[Download AutoClicker (v1.0.0)](https://github.com/acidhood999/AutoClicker/releases/latest/download/AutoClicker-v1.0.0-win64.zip)
