@@ -8,6 +8,9 @@ AutoClicker::AutoClicker(QWidget* parent) : QMainWindow(parent)
     ui.setupUi(this);
     settingWindow();
 
+    ui.mainToolBar->setVisible(false);
+    ui.statusBar->setVisible(false);
+
     fun = new Functional(this);
     setCentralWidget(fun);
 
@@ -22,6 +25,7 @@ void AutoClicker::settingWindow()
     setWindowTitle("Auto Clicker");
     setFixedSize(605, 400);
     setWindowIcon(QIcon(":/AutoClicker/mouse.ico"));
+
 }
 
 void AutoClicker::setupTrayIcon()

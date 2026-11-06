@@ -35,7 +35,7 @@ void Functional::setupUi()
     initializationClickNodeList();
 
     clickNodeGroup = new QGroupBox("Nodes", this);
-    clickNodeGroup->setFixedHeight(357);
+    clickNodeGroup->setFixedHeight(382);
     QVBoxLayout* nodeLayout = new QVBoxLayout(clickNodeGroup);
 
     nodeLayout->addLayout(addAndDel);
@@ -47,6 +47,8 @@ void Functional::setupUi()
     QGroupBox* repeatClickGroup = createRepeatClickGroup();
     QGroupBox* buttonsGroup = createButtonsGroup();
     QGroupBox* modeSelection = createModeSelection();
+
+    modeSelection->setFixedHeight(60);
 
     buttonsGroup->setFixedHeight(100);
     buttonsGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -357,7 +359,10 @@ void Functional::buttonsClickStart()
 void Functional::buttonsClickStop()
 {
     if (mouseClick && clickThread && clickThread->isRunning()) mouseClick->stop();
-    setMarkersVisible(true);
+
+  
+    if (selectNodesCursor && selectNodesCursor->isChecked() && this->isVisible()) setMarkersVisible(true);
+    else setMarkersVisible(false);
 
     btnStart->setEnabled(true);
     btnStop->setEnabled(false);
@@ -639,8 +644,11 @@ void Functional::setAutoStart(bool enable)
 
 void Functional::hideMarkersForTray() { setMarkersVisible(false); }
 
-void Functional::restoreMarkersFromTray() { if (selectNodesCursor && selectNodesCursor->isChecked()) setMarkersVisible(true); }
-
+void Functional::restoreMarkersFromTray()
+{
+    if (selectNodesCursor && selectNodesCursor->isChecked() && this->isVisible()) setMarkersVisible(true);
+    else setMarkersVisible(false);
+}
 Functional::~Functional()
 {
     UnregisterHotKey((HWND)this->winId(), 999);
